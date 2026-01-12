@@ -1,5 +1,5 @@
-# SPH in CUDA
-SPH for the Giesekus model with wall boundaries and suspensions of spherical particles, implemented in CUDA.
+# SPH Oldroyd-B in CUDA
+SPH for the Oldroyd-B model with wall boundaries and suspensions of spherical particles, implemented in CUDA.
 
 Developed by Adolfo Vázquez-Quesada. 
 
@@ -46,8 +46,6 @@ np      -> number of polymers per particle
 kT      -> Boltzmann constant multiplied by temperature
 
 tau     -> Relaxation time of the Oldroyd-B model
-
-alpha   -> alpha parameter of the Giesekus model
 
 ext_force_type -> Type of external force:
 
