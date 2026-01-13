@@ -94,12 +94,6 @@ F0_repulsion         -> Magnitude of the repulsion force.
 
 tau_repulsion        -> Tau parameter of the repulsion force (related to the cut off radius of the repulsion force).
 
-cutoff_magnetic -> Cut off radius of the magnetic force.
-
-F0_magnetic     -> F0 parameter of the magnetic force.
-
-omega_magnetic  -> Angular velocity of the rotation of the magnetic field.
-
 new_sim -> 
 		   0: new simulation.
 
