@@ -1,3 +1,10 @@
+/******************************************************
+This code has been developed by Adolfo Vazquez-Quesada,
+from the Department of Fundamental Physics at UNED, in
+Madrid, Spain.
+email: a.vazquez-quesada@fisfun.uned.es
+********************************************************/
+
 #include "kernel_functions.h"
 #include "config.h"
 #include <math.h>
@@ -363,6 +370,13 @@ __global__ void kernel_vel_gradients(real* __restrict__ x,
 	  if (cy >= 0 && cy < Ncells1) // This can happen when there are walls	  
 	    for (int k = cell_start[neigh_cell]; k <= cell_end[neigh_cell]; ++k) {
 	      int j = particle_index[k]; // index of the neighbour particle
+
+	      if (i == j)
+		continue;
+
+	      if (type_i == type[j] && type_i != 0) // Both are not from fluid
+		continue;	  
+	      
 	      real xij = xi - x[j];
 	      real yij = yi - y[j];
 	      real zij = zi - z[j];

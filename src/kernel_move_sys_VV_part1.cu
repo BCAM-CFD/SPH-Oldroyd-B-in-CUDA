@@ -1,3 +1,10 @@
+/******************************************************
+This code has been developed by Adolfo Vazquez-Quesada,
+from the Department of Fundamental Physics at UNED, in
+Madrid, Spain.
+email: a.vazquez-quesada@fisfun.uned.es
+********************************************************/
+
 #include "kernel_functions.h"
 #include "config.h"
 
@@ -37,21 +44,14 @@ __global__ void kernel_move_sys_VV_part1(real* __restrict__ x,
   real zi;
   if (dim == 3)  
     zi  = z[i];
-  real vxi;
-  real vyi;
-  real vzi;
 
   if (type_i == 0) { // i fluid 
-    vxi = vx[i];
-    vyi = vy[i];
-    if (dim == 3)
-      vzi = vz[i];
 
     real half_dt           = 0.5 * dt;    
     real half_dt_over_mass = half_dt / mass[i];
     // Velocity at t + dt/2 
-    vx[i] = vxi + half_dt_over_mass * fx[i];
-    vy[i] = vyi + half_dt_over_mass * fy[i];    
+    vx[i] = vx[i] + half_dt_over_mass * fx[i];
+    vy[i] = vy[i] + half_dt_over_mass * fy[i];    
 
     // Conformation tensor at t + dt/2
     cxx[i] = cxx[i] + half_dt * dcdt_xx[i]; 
@@ -68,23 +68,23 @@ __global__ void kernel_move_sys_VV_part1(real* __restrict__ x,
     
   }
   else if (type_i == 1) {// i bottom wall
-    vxi = V_bottom;
-    vyi = 0.0;
+    vx[i] = V_bottom;
+    vy[i] = 0.0;
     if (dim == 3)    
-      vzi = 0.0;
+      vz[i] = 0.0;
   }
   else if (type_i == 2) {// i top wall
-    vxi = V_top;
-    vyi = 0.0;
+    vx[i] = V_top;
+    vy[i] = 0.0;
     if (dim == 3)    
-      vzi = 0.0;
+      vz[i] = 0.0;
   }  //Particles with type_i > 2 where discarded above
 
   // Position at t + dt
-  xi = xi + vxi * dt;
-  yi = yi + vyi * dt;
+  xi = xi + vx[i] * dt;
+  yi = yi + vy[i] * dt;
   if (dim == 3)
-    zi = zi + vzi * dt;
+    zi = zi + vz[i] * dt;
   
   // Periodic Boundary conditions
   if (xi < 0)

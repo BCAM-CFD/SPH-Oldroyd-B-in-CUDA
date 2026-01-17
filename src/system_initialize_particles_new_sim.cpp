@@ -1,3 +1,10 @@
+/******************************************************
+This code has been developed by Adolfo Vazquez-Quesada,
+from the Department of Fundamental Physics at UNED, in
+Madrid, Spain.
+email: a.vazquez-quesada@fisfun.uned.es
+********************************************************/
+
 #include "class_system.h"
 #include "config.h"
 #include <math.h>
@@ -127,8 +134,8 @@ int class_system::initialize_particles_new_sim(int  Nxyz[3],
     cxy_tensor[i] = 0.0;
     cyy_tensor[i] = 1.0;
     cxz_tensor[i] = 0.0;
-    cyz_tensor[i] = 1.0;
-    czz_tensor[i] = 0.0;    
+    cyz_tensor[i] = 0.0;
+    czz_tensor[i] = 1.0;    
   }
 
   //--------- Initialization of colloids ----------------
