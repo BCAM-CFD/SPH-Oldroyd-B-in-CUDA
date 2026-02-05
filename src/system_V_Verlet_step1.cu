@@ -82,8 +82,8 @@ int class_system::V_Verlet_step1(dim3 numBlocks,
   }
 
   //--- Particles of colloids are moved ---
-  if (coll_move == 0)
-    if (N_colloids > 0) {
+  if (N_colloids > 0) {
+    if (coll_move == 0)
       kernel_move_colloids_VV_part1<<<numBlocks, threadsPerBlock>>>(k_coll_x, k_coll_y,
 								    k_coll_z, k_coll_vx,
 								    k_coll_vy, k_coll_vz,
@@ -107,11 +107,11 @@ int class_system::V_Verlet_step1(dim3 numBlocks,
 								    k_z_center,
 								    k_colloids_list,
 								    k_colloids_start);
-      cuda_err = cudaGetLastError();
-      if (cuda_err != cudaSuccess) {
-	printf("Error in kernel_colloids_VV_part1: %s\n", cudaGetErrorString(cuda_err));
-	return 1;
-      }
+    cuda_err = cudaGetLastError();
+    if (cuda_err != cudaSuccess) {
+      printf("Error in kernel_colloids_VV_part1: %s\n", cudaGetErrorString(cuda_err));
+      return 1;
+    }
   }
   
   cudaDeviceSynchronize();  // We require the kernel to end to continue    

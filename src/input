@@ -3,19 +3,19 @@
   L        1.0  1.0
   dim      2
 #  dt       0.0001  
-  dt       0.000025
-  Nsteps   600000
+  dt       0.00005
+  Nsteps   300000
   overlap  4.0
   rho      1.0
   c        1.0
   P0       0.9
-  eta      0.02
+  eta      0.04
 #  zeta     1.66667
   zeta     0.0
   #**** oldroyd ***
-  np   1.0
-  kT   0.02
-  tau  1.0
+  np   0.0
+  kT   1.0
+  tau  0.02  
   
   ext_force_type 2
   ext_force    0.0286   0.0

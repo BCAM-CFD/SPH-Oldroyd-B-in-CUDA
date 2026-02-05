@@ -10,12 +10,12 @@ email: a.vazquez-quesada@fisfun.uned.es
 #define CONFIG_H
 
 // Comment or uncomment to decide if real means float or double
-// Type and format for double
-/* #define real double */
-/* #define REAL_FMT "%.8lf" */
-// Type and format for real
-#define real float
-#define REAL_FMT "%.8f"
+// Type and format for real as double
+#define real double
+#define REAL_FMT "%.8lf"
+// Type and format for real as float
+/* #define real float */
+/* #define REAL_FMT "%.8f" */
 
 #endif // CONFIG_H
 #define MAX_COLLOIDS 1000

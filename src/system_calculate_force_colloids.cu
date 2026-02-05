@@ -74,13 +74,6 @@ int class_system::calculate_force_colloids(dim3  numBlocks,
       return 1;
     }  	
     cudaDeviceSynchronize();  // We require the kernel to end to continue
-
-    cuda_err = cudaGetLastError();
-    if (cuda_err != cudaSuccess){
-      printf("Error in kernel_magnetic_force_colloids: %s\n", cudaGetErrorString(cuda_err));
-      return 1;
-    }  	
-    cudaDeviceSynchronize();  // We require the kernel to end to continue
   }
   
   return 0;

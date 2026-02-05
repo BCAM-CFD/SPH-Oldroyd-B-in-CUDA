@@ -88,10 +88,17 @@ int class_system::initialize(int  Nxyz[3],
   csq       = c*c;
   this->P0  = P0;
   rho0      = P0 * rho;
-  a         = 5.0 * eta/3.0  - zeta;
-  b         = 5.0 * (zeta + eta/3.0);
+  if (dim == 3) {
+    a         = 5.0 * eta/3.0  - zeta;
+    b         = 5.0 * (zeta + eta/3.0);
+  }
+  else {  // dim == 2
+    a         = 5.0 * eta/3.0  - zeta;
+    b         = 4.0 * (zeta + eta/3.0);
+  }
 
-  //About Morris boundary conditions
+  // About Morris boundary conditions
+  // In Morris 1997 beta_max is 1.5  
   this->beta_max = 1.5;
 
   // Neighbour cells
