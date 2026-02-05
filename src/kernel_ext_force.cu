@@ -50,5 +50,23 @@ __global__ void kernel_ext_force(real* __restrict__ x,
       if (dim == 3)
 	fz[i] += fi[2];
     }
+    else if (ext_force_type == 3) { // constant force F at half the channel and
+                                    // constant force -F at the other half
+      real fi[3] = {0.0, 0.0, 0.0};            
+      real mass_i = mass[i];
+      if (y[i] < 0.5 * L[1])
+	fi[0] =   mass_i * ext_force[0];
+      else
+	fi[0] = - mass_i * ext_force[0];
+      fi[1] = 0.0;
+      if (dim == 3)
+	fi[2] = 0.0;
+      
+      //-- The force is summed up to the kernel variable --
+      fx[i] += fi[0];
+      fy[i] += fi[1];
+      if (dim == 3)
+	fz[i] += fi[2];
+    }        
   }
 }
