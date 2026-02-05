@@ -55,6 +55,8 @@ ext_force_type -> Type of external force:
 
 		   2: sine force
 
+		   3: force to simulate inverse Poiseuille flow
+
 ext_force -> External force vector
 
 freq_micro    -> Frequency to write micro file.
