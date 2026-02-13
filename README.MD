@@ -17,7 +17,18 @@ mail: a.vazquez-quesada@fisfun.uned.es
 - main.cu is the main file of the code.
 
 *******************************
-******** input variables ******
+      Compilation 
+*******************************
+The compilation is done with the makefile file. 
+To compile, just write the following command in the command line:
+
+make
+
+If you want to clean everthing before compiling again, just do
+
+make clean
+*******************************
+         input variables 
 *******************************
 N       -> Number of particles in each direction ( in a rectangular grid)
 
