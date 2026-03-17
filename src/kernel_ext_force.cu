@@ -67,6 +67,7 @@ __global__ void kernel_ext_force(real* __restrict__ x,
       fy[i] += fi[1];
       if (dim == 3)
 	fz[i] += fi[2];
-    }        
+    }
+    
   }
 }

@@ -1,10 +1,3 @@
-/******************************************************
-This code has been developed by Adolfo Vazquez-Quesada,
-from the Department of Fundamental Physics at UNED, in
-Madrid, Spain.
-email: a.vazquez-quesada@fisfun.uned.es
-********************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,6 +18,9 @@ int class_system::read_input(int   N[3],
 			     real& P0,
 			     real& eta,
 			     real& zeta,
+			     real& np,
+			     real& kT,
+			     real& elast_time,			     
 			     int&  ext_force_type,
 			     real  ext_force[3],
 			     int&  freq_micro,
@@ -66,6 +62,9 @@ int class_system::read_input(int   N[3],
   int P0_read              = 1;
   int eta_read             = 1;
   int zeta_read            = 1;
+  int np_read              = 1;
+  int kT_read              = 1;
+  int elast_time_read      = 1;    
   int ext_force_type_read  = 1;    
   int ext_force_read       = 1;
   int freq_micro_read      = 1;
@@ -151,6 +150,15 @@ int class_system::read_input(int   N[3],
     } else if (strcmp(var, "zeta") == 0 && count >= 2) {
       zeta                 = val1;
       zeta_read            = 0;
+    } else if (strcmp(var, "np") == 0 && count >= 2) {
+      np                   = val1;
+      np_read              = 0;
+    } else if (strcmp(var, "kT") == 0 && count >= 2) {
+      kT                   = val1;
+      kT_read              = 0;
+    } else if (strcmp(var, "tau") == 0 && count >= 2) {
+      elast_time           = val1;
+      elast_time_read      = 0;         
     } else if (strcmp(var, "ext_force_type") == 0 && count >= 2) {
       ext_force_type       = (int)val1;
       ext_force_type_read  = 0;	  
@@ -282,6 +290,18 @@ int class_system::read_input(int   N[3],
     printf("system_read_input error: zeta was not read\n");
     return 1;
   }
+  if (np_read == 1)  {
+    printf("system_read_input error: np was not read\n");
+    return 1;
+  }
+  if (kT_read == 1)  {
+    printf("system_read_input error: kT was not read\n");
+    return 1;
+  }
+  if (elast_time_read == 1)  {
+    printf("system_read_input error: tau was not read\n");
+    return 1;
+  }    
   if (ext_force_type_read == 1)  {
     printf("system_read_input error: ext_force_type was not read\n");
     return 1;
@@ -390,7 +410,7 @@ int class_system::read_input(int   N[3],
 	return 1;	
       }
       if (dim == 3)
-	if (coll_x_data[i][1] < 0 || coll_x_data[i][1] > L[2]) {
+	if (coll_x_data[i][2] < 0 || coll_x_data[i][2] > L[2]) {
 	  printf("System read input error: Colloid is out of the simulation box\n");
 	  return 1;	
 	}	
@@ -427,7 +447,7 @@ int class_system::read_input(int   N[3],
 	  //--- Periodic boundary conditions ---
 	  if (xij > 0.5 * L[0])
 	    xij -= L[0];
-	  if (xij > -0.5 * L[0])
+	  if (xij < -0.5 * L[0])
 	    xij += L[0];
 	  if (wall == 0) {   //If there are not walls	      	    
 	    if (yij > 0.5 * L[1])
@@ -437,7 +457,7 @@ int class_system::read_input(int   N[3],
 	  }
 	  if (zij > 0.5 * L[2])
 	    zij -= L[2];
-	  if (zij > -0.5 * L[2])
+	  if (zij < -0.5 * L[2])
 	    zij += L[2];	  
 	
 	  real rij = sqrt(xij*xij + yij*yij + zij*zij);
