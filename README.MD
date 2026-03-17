@@ -107,7 +107,8 @@ F0_repulsion         -> Magnitude of the repulsion force.
 
 tau_repulsion        -> Tau parameter of the repulsion force (related to the cut off radius of the repulsion force).
 
-new_sim -> 
+new_sim -> The simulation is new, or it is restarting from a previous simulation
+
 		   0: new simulation.
 
 	       1: existing simulation (the orientation of the magnetic field is not currently read in this option)
