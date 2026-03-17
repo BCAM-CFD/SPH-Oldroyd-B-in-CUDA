@@ -93,10 +93,11 @@ coll_R     -> Colloids radius.
 
 coll_rho   -> Colloids density.
 
-coll_move  -> 
-			  0: colloids are moving.
+coll_move  -> wether colloids are moving or fixed
 
-	   		  1: colloids are not moving.
+			  0: colloids can move.
+
+	   		  1: colloids are fixed.
 
 coll_x     -> Position of one colloid. Put as many coll_x as needed.
 
