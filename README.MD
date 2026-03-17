@@ -16,9 +16,8 @@ mail: a.vazquez-quesada@fisfun.uned.es
 
 - main.cu is the main file of the code.
 
-*******************************
-      Compilation 
-*******************************
+# Compilation 
+
 The compilation is done with the makefile file. 
 To compile, just write the following command in the command line:
 
