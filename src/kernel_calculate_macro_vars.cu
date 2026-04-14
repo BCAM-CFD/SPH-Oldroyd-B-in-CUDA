@@ -7,6 +7,7 @@ email: a.vazquez-quesada@fisfun.uned.es
 
 #include "kernel_functions.h"
 #include "config.h"
+#include "atomicAdd_double.cuh"
 
 //Function to calculate total kinetic energy and total momentum of the system
 __global__ void kernel_calculate_macro_vars(real* __restrict__ mass,
@@ -24,6 +25,15 @@ __global__ void kernel_calculate_macro_vars(real* __restrict__ mass,
     part_sum = 0.5 * mass[i] * (vx[i] * vx[i] + vy[i] * vy[i]);
   else //--- dim = 3 ---
     part_sum = 0.5 * mass[i] * (vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i]);
+
+  //-- The sum is saved in kin_energy --  
+#if __CUDA_ARCH__ >= 600
+  // modern GPUs -> native atomicAdd
   atomicAdd(kin_energy, part_sum);
+#else
+  // old GPUs (< 6.0) -> use CAS emulation
+  atomicAdd_double_emulated(kin_energy, part_sum);
+#endif
+
 
 }
