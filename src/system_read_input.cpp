@@ -45,7 +45,7 @@ int class_system::read_input(int   N[3],
   
   FILE *file = fopen("input", "r");
   if (!file) {
-    perror("Error al abrir el archivo");
+    perror("Opening file error");    
     return 0;
   }
 
