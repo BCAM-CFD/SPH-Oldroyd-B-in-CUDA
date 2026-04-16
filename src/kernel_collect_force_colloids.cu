@@ -17,12 +17,15 @@ __global__ void kernel_collect_force_colloids(real* __restrict__ fx_colloid,
 					      real* __restrict__ tx_colloid,
 					      real* __restrict__ ty_colloid,
 					      real* __restrict__ tz_colloid,
+					      real* __restrict__ x,
+					      real* __restrict__ y,
+					      real* __restrict__ z,
 					      real* __restrict__ fx,
 					      real* __restrict__ fy,
 					      real* __restrict__ fz,
-					      real* __restrict__ x_center,
-					      real* __restrict__ y_center,
-					      real* __restrict__ z_center,
+					      real* __restrict__ coll_x,
+					      real* __restrict__ coll_y,
+					      real* __restrict__ coll_z,
 					      int*  __restrict__ colloids_list,
 					      int*  __restrict__ colloids_start) {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
@@ -50,10 +53,31 @@ __global__ void kernel_collect_force_colloids(real* __restrict__ fx_colloid,
     if (dim == 3)
       fz_colloid_i = fz_colloid_i + fz[part];
     //--- Torques ---
-    tz_colloid_i = tz_colloid_i + fy[part] * x_center[j] - fx[part] * y_center[j];
+    // Relative position of boundary particle with respect to colloid center ---
+    //    x_center, y_center,... cannot be used, because they are not changed during the sim
+    real rx = x[part] - coll_x[i];
+    real ry = y[part] - coll_y[i];
+    real rz;
+    if (dim == 3)
+      rz = z[part] - coll_z[i];
+    // Minimum-image correction in periodic directions
+    if (rx >  0.5 * L[0]) rx -= L[0];
+    if (rx < -0.5 * L[0]) rx += L[0];
+    if (wall == 0) {
+      if (ry >  0.5 * L[1]) ry -= L[1];
+      if (ry < -0.5 * L[1]) ry += L[1];
+    }
     if (dim == 3) {
-      tx_colloid_i = tx_colloid_i + fz[part] * y_center[j] - fy[part] * z_center[j];
-      ty_colloid_i = ty_colloid_i + fx[part] * z_center[j] - fz[part] * x_center[j];
+      rz = z[part] - coll_z[i];
+      if (rz >  0.5 * L[2]) rz -= L[2];
+      if (rz < -0.5 * L[2]) rz += L[2];
+    }
+    // Torques: T = r x F 
+    tz_colloid_i = tz_colloid_i + rx * fy[part] - ry * fx[part];
+    if (dim == 3) {
+      tx_colloid_i = tx_colloid_i + ry * fz[part] - rz * fy[part];
+      ty_colloid_i = ty_colloid_i + rz * fx[part] - rx * fz[part];        
+    
     }
   }
 

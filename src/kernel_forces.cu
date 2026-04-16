@@ -152,8 +152,8 @@ __global__ void kernel_forces(real* __restrict__ x,
 	    
 	    if (i == j)
 	      continue;
-	    
-	    if (type_i == type[j] && type_i != 0) // Both are not from fluid
+
+	    if (type_i != 0 && type[j] != 0) // Both are not from fluid	      	    	    
 	      continue;	  
 	  
 	    rij[0] = xi - x[j];
@@ -478,8 +478,8 @@ __global__ void kernel_forces(real* __restrict__ x,
 	    
 	    if (i == j)
 	      continue;
-	    
-	    if (type_i == type[j] && type_i != 0) // Both are not from fluid
+
+	    if (type_i != 0 && type[j] != 0) // Both are not from fluid	      	    	    
 	      continue;	  
 	  
 	    rij[0] = xi - x[j];
