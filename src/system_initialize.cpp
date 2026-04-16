@@ -230,19 +230,22 @@ int class_system::initialize(int  Nxyz[3],
     if (Ncells_colloids[0] < 3) {
       printf("System initialize error: neighbour colloids cells are too big\n");
       printf("Ncells_colloids[0] = %d\n", Ncells_colloids[0]);
+      printf("Maybe tau_repulsion is too small? rcutoff_coll_rep = 5.0*R/tau_rep\n");      
       error_out = 1;
       return 1;
     }
     if (Ncells_colloids[1] < 3) {
       printf("System initialize error: neighbour colloids cells are too big\n");
-      printf("Ncells_colloids[1] = %d\n", Ncells_colloids[1]);    
+      printf("Ncells_colloids[1] = %d\n", Ncells_colloids[1]);
+      printf("Maybe tau_repulsion is too small? rcutoff_coll_rep = 5.0*R/tau_rep\n");      
       error_out = 1;
       return 1;
     }
     if (dim == 3)
       if (Ncells_colloids[2] < 3) {
 	printf("System initialize error: neighbour colloids cells are too big\n");
-	printf("Ncells_colloids[2] = %d\n", Ncells_colloids[2]);      
+	printf("Ncells_colloids[2] = %d\n", Ncells_colloids[2]);
+	printf("Maybe tau_repulsion is too small? rcutoff_coll_rep = 5.0*R/tau_rep\n");	
 	error_out = 1;
       return 1;
       }
