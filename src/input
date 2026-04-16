@@ -35,7 +35,6 @@
   coll_move 0
   coll_x 0.5 0.5
   coll_x 0.84 0.5  
-  coll_repulsion_cutoff 0.05
   coll_repulsion_cuton  0.0
   F0_repulsion 1.0
   tau_repulsion 0.1
