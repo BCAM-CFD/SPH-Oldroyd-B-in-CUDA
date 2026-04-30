@@ -4,6 +4,7 @@ SPH for the Oldroyd-B model with wall boundaries and suspensions of spherical pa
 Developed by Adolfo Vázquez-Quesada. 
 
 mail: a.vazquez-quesada@fisfun.uned.es
+
 --------------------------------------------------
 
 - Host variables and functions are declared in class_system.h.
@@ -27,37 +28,48 @@ If you want to clean everthing before compiling again, just do
 
 make clean
 
+## Running a simulation
+
+You need to have the following files in the same directory (with the exact names shown below):
+
+- **SPH_program**: the executable.
+- **input**: a file containing the program inputs.
+
+To run the program, execute:
+
+./SPH_program
+
 ## Input variables 
 
-N       -> Number of particles in each direction ( in a rectangular grid)
+**N**       -> Number of particles in each direction ( in a rectangular grid)
 
-L       -> Box length in each direction.
+**L**       -> Box length in each direction.
 
-dim     -> Number of dimensions
+**dim**     -> Number of dimensions
 
-dt      -> Time steps
+**dt**      -> Time steps
 
-Nsteps  -> Number of steps
+**Nsteps**  -> Number of steps
 
-overlap -> rcut / dx   (where dx = L/N)
+**overlap** -> rcut / dx   (where dx = L/N)
 
-rho     -> fluid density
+**rho**     -> fluid density
 
-c       -> Speed of sound
+**c**       -> Speed of sound
 
-P0      -> parameter of the equation of state
+**P0**      -> parameter of the equation of state
 
-eta     -> shear viscosity
+**eta**     -> shear viscosity
 
-zeta    -> bulk viscosity
+**zeta**    -> bulk viscosity
 
-np      -> number of polymers per particle
+**np**      -> number of polymers per particle
 
-kT      -> Boltzmann constant multiplied by temperature
+**kT**      -> Boltzmann constant multiplied by temperature
 
-tau     -> Relaxation time of the Oldroyd-B model
+**tau**     -> Relaxation time of the Oldroyd-B model
 
-ext_force_type -> Type of external force:
+**ext_force_type** -> Type of external force:
 
 	       0: No external force
 
@@ -67,47 +79,47 @@ ext_force_type -> Type of external force:
 
 		   3: force to simulate inverse Poiseuille flow
 
-ext_force -> External force vector
+**ext_force** -> External force vector
 
-freq_micro    -> Frequency to write micro file.
+**freq_micro**    -> Frequency to write micro file.
 
-freq_macro    -> Frequency to write macro file.
+**freq_macro**    -> Frequency to write macro file.
 
-freq_walls    -> Frequency to write walls file.
+**freq_walls**    -> Frequency to write walls file.
 
-freq_colloids -> Frequency to write colloids file.
+**freq_colloids** -> Frequency to write colloids file.
 
-wall -> walls are normal to the y-direction.
+**wall** -> walls are normal to the y-direction.
 
 		0: no walls
 
      	1: walls
 
-Vwall_bottom -> x-velocity of the bottom wall.
+**Vwall_bottom** -> x-velocity of the bottom wall.
 
-Vwall_top    -> x-velocity of the top wall.
+**Vwall_top**    -> x-velocity of the top wall.
 
-N_colloids -> Number of colloidal particles.
+**N_colloids** -> Number of colloidal particles.
 
-coll_R     -> Colloids radius.
+**coll_R**     -> Colloids radius.
 
-coll_rho   -> Colloids density.
+**coll_rho**   -> Colloids density.
 
-coll_move  -> wether colloids are moving or fixed
+**coll_move**  -> wether colloids are moving or fixed
 
 			  0: colloids can move.
 
 	   		  1: colloids are fixed.
 
-coll_x     -> Position of one colloid. Put as many coll_x as needed.
+**coll_x**     -> Position of one colloid. Put as many coll_x as needed.
 
-coll_repulsion_cuton -> Cut on of the repulsion force between colloids.
+**coll_repulsion_cuton** -> Cut on of the repulsion force between colloids.
 
-F0_repulsion         -> Magnitude of the repulsion force.
+**F0_repulsion**         -> Magnitude of the repulsion force.
 
-tau_repulsion        -> Tau parameter of the repulsion force (related to the cut off radius of the repulsion force).
+**tau_repulsion**        -> Tau parameter of the repulsion force (related to the cut off radius of the repulsion force).
 
-new_sim -> The simulation is new, or it is restarting from a previous simulation
+**new_sim** -> The simulation is new, or it is restarting from a previous simulation
 
 		   0: new simulation.
 
