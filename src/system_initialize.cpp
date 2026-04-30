@@ -180,11 +180,12 @@ int class_system::initialize(int  Nxyz[3],
       if (dim == 3)
 	this->coll_vz[i] = 0.0;
 
-      //--- Angular velocities 
-      this->coll_omegax[i] = 0.0;
-      this->coll_omegay[i] = 0.0;
-      if (dim == 3)
-	this->coll_omegaz[i] = 0.0;
+      //--- Angular velocities
+      this->coll_omegaz[i] = 0.0;      
+      if (dim == 3){
+	this->coll_omegax[i] = 0.0;
+	this->coll_omegay[i] = 0.0;
+      }	      
       this->coll_theta[i]    = 0.0;
       this->coll_quat0[i]    = 1.0;
       this->coll_quatx[i]    = 0.0;
