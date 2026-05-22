@@ -34,10 +34,15 @@ __global__ void kernel_collect_force_colloids(real* __restrict__ fx_colloid,
 
   real fx_colloid_i = fx_colloid[i];
   real fy_colloid_i = fy_colloid[i];
-  real tx_colloid_i = tx_colloid[i];
+  real tz_colloid_i = tz_colloid[i];
   real fz_colloid_i;
-  real ty_colloid_i;
-  real tz_colloid_i;  
+  real tx_colloid_i;
+  real ty_colloid_i;  
+  if (dim == 3) {
+    fz_colloid_i = fz_colloid[i];
+    tx_colloid_i = tx_colloid[i];
+    ty_colloid_i = ty_colloid[i];
+  }  
   if (dim == 3) {
     fz_colloid_i = fz_colloid[i];
     ty_colloid_i = ty_colloid[i];
