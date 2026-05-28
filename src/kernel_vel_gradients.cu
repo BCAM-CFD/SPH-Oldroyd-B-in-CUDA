@@ -459,7 +459,7 @@ __global__ void kernel_vel_gradients(real* __restrict__ x,
 		else { // ---------- j colloid (type[j] > 2) -----------
 		  int coll_part = type[j] - 3;  // Colloidal particle id
 		  // Distance particle-colloid center is calculated
-		  real ri_coll[2];
+		  real ri_coll[3];
 		  ri_coll[0] = xi - coll_x[coll_part];
 		  ri_coll[1] = yi - coll_y[coll_part];
 		  ri_coll[2] = zi - coll_z[coll_part];		  
@@ -563,7 +563,7 @@ __global__ void kernel_vel_gradients(real* __restrict__ x,
 		else {  // ------------- i colloid (type[j] > 2 ------------------ 
 		  int coll_part = type_i - 3;  // Colloidal particle id
 		  // Distance particle-colloid center is calculated
-		  real rj_coll[2];
+		  real rj_coll[3];
 		  rj_coll[0] = x[j] - coll_x[coll_part];
 		  rj_coll[1] = y[j] - coll_y[coll_part];
 		  rj_coll[2] = z[j] - coll_z[coll_part];
