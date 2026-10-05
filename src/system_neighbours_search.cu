@@ -56,6 +56,9 @@ int class_system::neighbours_search(dim3  numBlocks,
   thrust::device_ptr<int> d_index(k_particle_index);
   thrust::sort_by_key(d_cell, d_cell + this->N, d_index);
 
+  //-- Initialization of cell_start and cell_end --
+  kernel_initialize_cells<<<numBlocks, threadsPerBlock>>>(k_cell_start,
+							  k_cell_end);    
   //-- Cell indices for beginning and end of cells are calculated --
   kernel_cell_ranges<<<numBlocks, threadsPerBlock>>>(k_particle_cell, k_cell_start, k_cell_end);
   cuda_err = cudaGetLastError();

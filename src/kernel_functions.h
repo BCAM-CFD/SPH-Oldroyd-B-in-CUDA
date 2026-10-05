@@ -311,6 +311,10 @@ __global__ void kernel_calculate_macro_vars(real* __restrict__ mass,
 					    real* __restrict__ vx,
 					    real* __restrict__ vy,
 					    real* __restrict__ vz,
+					    int*  __restrict__ type,
+					    real* __restrict__ coll_vx,
+					    real* __restrict__ coll_vy,
+					    real* __restrict__ coll_vz,
 					    real* __restrict__ kin_energy);
 __global__ void kernel_macro_vars_to_zero(real* __restrict__ kin_energy);
 __global__ void kernel_cell_colloids_list(real* __restrict__ coll_x,
@@ -318,6 +322,8 @@ __global__ void kernel_cell_colloids_list(real* __restrict__ coll_x,
 					  real* __restrict__ coll_z,
 					  int*  __restrict__ coll_cell,
 					  int*  __restrict__ coll_index);
+__global__ void kernel_initialize_cells(int* __restrict__ cell_start,
+					int* __restrict__ cell_end);
 __global__ void kernel_initialize_cell_colloids(int* __restrict__ coll_cell_start,
 						int* __restrict__ coll_cell_end);
 __global__ void kernel_cell_colloids_ranges(int* __restrict__ coll_cell,

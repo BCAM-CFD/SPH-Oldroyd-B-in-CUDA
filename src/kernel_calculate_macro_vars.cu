@@ -14,6 +14,10 @@ __global__ void kernel_calculate_macro_vars(real* __restrict__ mass,
 					    real* __restrict__ vx,
 					    real* __restrict__ vy,
 					    real* __restrict__ vz,
+					    int*  __restrict__ type,
+					    real* __restrict__ coll_vx,
+					    real* __restrict__ coll_vy,
+					    real* __restrict__ coll_vz,
 					    real* __restrict__ kin_energy) {
 
   int i = threadIdx.x + blockIdx.x * blockDim.x;
@@ -21,11 +25,23 @@ __global__ void kernel_calculate_macro_vars(real* __restrict__ mass,
 
   real part_sum;
 
-  if (dim == 2)
-    part_sum = 0.5 * mass[i] * (vx[i] * vx[i] + vy[i] * vy[i]);
-  else //--- dim = 3 ---
-    part_sum = 0.5 * mass[i] * (vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i]);
+  //--- Loop over fluid particles ---
+  if (type[i] == 0) {
+    if (dim == 2)
+      part_sum = 0.5 * mass[i] * (vx[i] * vx[i] + vy[i] * vy[i]);
+    else //--- dim = 3 ---
+      part_sum = 0.5 * mass[i] * (vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i]);
+  }
 
+  //--- Loop over colloids ---
+  if (i < N_colloids) {
+    if (dim == 2)
+      part_sum += 0.5 * coll_mass * (coll_vx[i] * coll_vx[i] + coll_vy[i] * coll_vy[i]);
+    else //--- dim = 3 ---
+      part_sum += 0.5 * coll_mass * (coll_vx[i] * coll_vx[i] + coll_vy[i] * coll_vy[i] +
+				     coll_vz[i] * coll_vz[i]);
+  }
+    
   //-- The sum is saved in kin_energy --  
 #if __CUDA_ARCH__ >= 600
   // modern GPUs -> native atomicAdd
@@ -34,6 +50,5 @@ __global__ void kernel_calculate_macro_vars(real* __restrict__ mass,
   // old GPUs (< 6.0) -> use CAS emulation
   atomicAdd_double_emulated(kin_energy, part_sum);
 #endif
-
 
 }

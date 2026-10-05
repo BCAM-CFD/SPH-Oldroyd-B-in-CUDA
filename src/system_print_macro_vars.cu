@@ -17,6 +17,10 @@ void class_system::print_macro_vars(dim3 numBlocks,
 				    real* k_vx,
 				    real* k_vy,
 				    real* k_vz,
+				    int*  k_type,
+				    real* k_coll_vx,
+				    real* k_coll_vy,
+				    real* k_coll_vz,
 				    real* kin_energy,
 				    int step) {
   //--  Macro variables are set to zero --
@@ -24,8 +28,9 @@ void class_system::print_macro_vars(dim3 numBlocks,
   cudaDeviceSynchronize();  // We require the kernel to end to continue
 
   //-- Macro variables are calculated --
-  kernel_calculate_macro_vars<<<numBlocks, threadsPerBlock>>>(k_mass, k_vx, k_vy, k_vz, kin_energy);
-
+  kernel_calculate_macro_vars<<<numBlocks, threadsPerBlock>>>(k_mass, k_vx, k_vy, k_vz, k_type,
+							      k_coll_vx, k_coll_vy, k_coll_vz,
+							      kin_energy);
   //-- Macro variables are copied into the host --
   cudaMemcpy(&this->kin_energy, kin_energy, sizeof(real), cudaMemcpyDeviceToHost);  
 

@@ -116,18 +116,27 @@ __global__ void kernel_move_colloids_VV_part1(real* __restrict__ coll_x,
     coll_theta[i] = coll_theta_i;
   }
   else {   // dim == 3
-    // Change of angle during this time step
-    real coll_dtheta_half = 0.5 * omega * dt;
-    // Rotation axis
-    real axis[3] = {coll_omegax[i]/omega,
-		    coll_omegay[i]/omega,
-		    coll_omegaz[i]/omega};
-    // We define the partial quaternion
-    real sin_dtheta_half = sin(coll_dtheta_half);
-    real d_coll_quat[4] = {cos(coll_dtheta_half),
-			   sin_dtheta_half * axis[0],
-			   sin_dtheta_half * axis[1],
-			   sin_dtheta_half * axis[2]};
+    real d_coll_quat[4];    
+    if (omega < 1.0E-15) { // Omega zero
+      d_coll_quat[0] = 1.0;
+      d_coll_quat[1] = 0.0;
+      d_coll_quat[2] = 0.0;
+      d_coll_quat[3] = 0.0;
+    }
+    else {  // Omega different than zero
+      // Change of angle during this time step
+      real coll_dtheta_half = 0.5 * omega * dt;
+      // Rotation axis
+      real axis[3] = {coll_omegax[i]/omega,
+		      coll_omegay[i]/omega,
+		      coll_omegaz[i]/omega};
+      // We define the partial quaternion
+      real sin_dtheta_half = sin(coll_dtheta_half);
+      d_coll_quat[0] = cos(coll_dtheta_half);
+      d_coll_quat[1] = sin_dtheta_half * axis[0];
+      d_coll_quat[2] = sin_dtheta_half * axis[1];
+      d_coll_quat[3] = sin_dtheta_half * axis[2];
+    }
     // The quaternion of the colloid is updated
     real coll_quat_i[4] = {coll_quat0[i], coll_quatx[i], coll_quaty[i], coll_quatz[i]};
     kernel_quaternion_product(d_coll_quat, coll_quat_i, coll_quat_result);
@@ -135,7 +144,7 @@ __global__ void kernel_move_colloids_VV_part1(real* __restrict__ coll_x,
     coll_quat0[i] = coll_quat_result[0];
     coll_quatx[i] = coll_quat_result[1];
     coll_quaty[i] = coll_quat_result[2];
-    coll_quatz[i] = coll_quat_result[3];    
+    coll_quatz[i] = coll_quat_result[3];
   }
   
   // To define the computational particles

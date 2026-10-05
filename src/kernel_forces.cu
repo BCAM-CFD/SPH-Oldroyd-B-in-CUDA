@@ -224,12 +224,9 @@ __global__ void kernel_forces(real* __restrict__ x,
 		Pixx_over_dens_square_i = Pixx_over_dens_square_i0;
 		Pixy_over_dens_square_i = Pixy_over_dens_square_i0;
 		Piyy_over_dens_square_i = Piyy_over_dens_square_i0;
-		Pixx_j                  = press_j - nkT * cxx[j];
-		Pixy_j                  =         - nkT * cxy[j];
-		Piyy_j                  = press_j - nkT * cyy[j];
-		Pixx_over_dens_square_j = Pixx_j * dens_j_inv_sq;
-		Pixy_over_dens_square_j = Pixy_j * dens_j_inv_sq;
-		Piyy_over_dens_square_j = Piyy_j * dens_j_inv_sq;		
+		Pixx_over_dens_square_j = Pixx_over_dens_square_i0;
+		Pixy_over_dens_square_j = Pixy_over_dens_square_i0;
+		Piyy_over_dens_square_j = Piyy_over_dens_square_i0;		
 		if (type[j] == 1) { //  -------- j bottom wall -------
 		  //-- Morris boundary conditions --
 		  dist_i = yi - y_bottom;
@@ -574,18 +571,12 @@ __global__ void kernel_forces(real* __restrict__ x,
 		Pixz_over_dens_square_i  = Pixz_over_dens_square_i0;
 		Piyz_over_dens_square_i  = Piyz_over_dens_square_i0;
 		Pizz_over_dens_square_i  = Pizz_over_dens_square_i0;
-		Pixx_j                   = press_j - nkT * cxx[j];
-		Pixy_j                   =         - nkT * cxy[j];
-		Piyy_j                   = press_j - nkT * cyy[j];
-		Pixz_j                   =         - nkT * cxz[j];
-		Piyz_j                   =         - nkT * cyz[j];
-		Pizz_j                   = press_j - nkT * czz[j];
-		Pixx_over_dens_square_j  = Pixx_j * dens_j_inv_sq;
-		Pixy_over_dens_square_j  = Pixy_j * dens_j_inv_sq;
-		Piyy_over_dens_square_j  = Piyy_j * dens_j_inv_sq;
-		Pixz_over_dens_square_j  = Pixz_j * dens_j_inv_sq;
-		Piyz_over_dens_square_j  = Piyz_j * dens_j_inv_sq;
-		Pizz_over_dens_square_j  = Pizz_j * dens_j_inv_sq;
+		Pixx_over_dens_square_j  = Pixx_over_dens_square_i0;
+		Pixy_over_dens_square_j  = Pixy_over_dens_square_i0;
+		Piyy_over_dens_square_j  = Piyy_over_dens_square_i0;
+		Pixz_over_dens_square_j  = Pixz_over_dens_square_i0;
+		Piyz_over_dens_square_j  = Piyz_over_dens_square_i0;
+		Pizz_over_dens_square_j  = Pizz_over_dens_square_i0;		
 		if (type[j] == 1) { //  -------- j bottom wall -------
 		  //-- Morris boundary conditions --
 		  dist_i = yi - y_bottom;

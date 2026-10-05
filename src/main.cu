@@ -317,7 +317,7 @@ int main() {
   //--------------------------------    
   sys.print_output(numBlocks, threadsPerBlock,
 		   k_x, k_y, k_z, k_vx, k_vy, k_vz,
-		   k_fx, k_fy, k_fz, k_mass, k_dens, k_press,
+		   k_fx, k_fy, k_fz, k_mass, k_type, k_dens, k_press,
 		   k_cxx, k_cxy, k_cyy, k_cxz, k_cyz, k_czz,
 		   k_fx_wall, k_fy_wall, k_fz_wall,
 		   k_coll_x, k_coll_y, k_coll_z,
@@ -416,7 +416,7 @@ int main() {
     //--- Output is written in output files ---
     sys.print_output(numBlocks, threadsPerBlock,
 		     k_x, k_y, k_z, k_vx, k_vy, k_vz,
-		     k_fx, k_fy, k_fz, k_mass, k_dens, k_press,
+		     k_fx, k_fy, k_fz, k_mass, k_type, k_dens, k_press,
 		     k_cxx, k_cxy, k_cyy, k_cxz, k_cyz, k_czz,
 		     k_fx_wall, k_fy_wall, k_fz_wall,
 		     k_coll_x, k_coll_y, k_coll_z,

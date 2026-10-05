@@ -14,7 +14,8 @@ void class_system::print_output(dim3 numBlocks,
 				real* k_fx,
 				real* k_fy,
 				real* k_fz,
-				real* k_mass,				   
+				real* k_mass,
+				int*  k_type,
 				real* k_dens,
 				real* k_press,
 				real* k_cxx,
@@ -65,8 +66,7 @@ void class_system::print_output(dim3 numBlocks,
 		     k_fx_colloid, k_fy_colloid, k_fz_colloid,
 		     k_tx_colloid, k_ty_colloid, k_tz_colloid, step);    
   //---- Macro variables are written ----
-  if (step % freq_macro == 0) 
+  if (step % freq_macro == 0)
     print_macro_vars(numBlocks, threadsPerBlock, k_mass, k_vx, k_vy, k_vz,
-		     k_kin_energy, step);
-
+		     k_type, k_coll_vx, k_coll_vy, k_coll_vz, k_kin_energy, step);    
 }
