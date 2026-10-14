@@ -12,15 +12,36 @@ email: a.vazquez-quesada@fisfun.uned.es
 
 // Function to calculate the pressure of each particle
 int class_system::calculate_pressure(dim3 numBlocks,
-				      dim3 threadsPerBlock,
-				      real* k_press,
-				      real* k_dens,
-				      real* k_mass)
+				     dim3 threadsPerBlock,
+				     real* k_press,
+				     real* k_dens,
+				     real* k_mass,
+				     real* k_inv_dens,
+				     real* k_cxx,
+				     real* k_cxy,
+				     real* k_cyy,
+				     real* k_cxz,
+				     real* k_cyz,
+				     real* k_czz,				     
+				     real* k_Pixx_over_dens_sq,
+				     real* k_Pixy_over_dens_sq,
+				     real* k_Piyy_over_dens_sq,
+				     real* k_Pixz_over_dens_sq,
+				     real* k_Piyz_over_dens_sq,
+				     real* k_Pizz_over_dens_sq)
 {
 
     cudaError_t cuda_err;
     
-    kernel_pressures<<<numBlocks, threadsPerBlock>>>(k_press, k_dens, k_mass);
+    kernel_pressures<<<numBlocks, threadsPerBlock>>>(k_press, k_dens, k_mass, k_inv_dens,
+						     k_cxx, k_cxy, k_cyy,
+						     k_cxz, k_cyz, k_czz,
+						     k_Pixx_over_dens_sq,
+						     k_Pixy_over_dens_sq,
+						     k_Piyy_over_dens_sq,
+						     k_Pixz_over_dens_sq,
+						     k_Piyz_over_dens_sq,
+						     k_Pizz_over_dens_sq);
     cuda_err = cudaGetLastError();
     if (cuda_err != cudaSuccess) {
       printf("Error in kernel_pressures: %s\n", cudaGetErrorString(cuda_err));

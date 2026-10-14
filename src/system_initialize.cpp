@@ -8,6 +8,7 @@ email: a.vazquez-quesada@fisfun.uned.es
 #include "class_system.h"
 #include "config.h"
 #include <math.h>
+#include <cfloat>   // FLT_EPSILON
 
 #include <stdio.h>
 
@@ -44,6 +45,9 @@ int class_system::initialize(int  Nxyz[3],
   this->L[0] = L[0];
   this->L[1] = L[1];
   this->L[2] = L[2];
+  this->Lf[0] = (float) L[0];
+  this->Lf[1] = (float) L[1];
+  this->Lf[2] = (float) L[2];  
   this->wall = wall;
   this->V_top = Vwall_top;
   this->V_bottom = Vwall_bottom;
@@ -96,6 +100,13 @@ int class_system::initialize(int  Nxyz[3],
     a         = 5.0 * eta/3.0  - zeta;
     b         = 4.0 * (zeta + eta/3.0);
   }
+
+  // We calculate a value a bit higher than rcutsq, in float (to accelerate neighbour comparisons)
+  // (error transforming a coordinate from double to float scales as the coordinate)
+  double Lmax        = fmax(fmax(L[0], L[1]), L[2]) + wall_width;
+  double rcut_filter = sqrt(rcutsq) * (1.0 + 1.0e-3) + 16.0 * Lmax * FLT_EPSILON;
+  this->rcutsq_f     = (float) (rcut_filter * rcut_filter);  
+  
 
   // About Morris boundary conditions
   // In Morris 1997 beta_max is 1.5  

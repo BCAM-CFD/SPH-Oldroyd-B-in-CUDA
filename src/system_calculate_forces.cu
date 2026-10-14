@@ -46,11 +46,18 @@ int class_system::calculate_forces(dim3 numBlocks,
 				   real* k_gradvzz,
 				   real* k_press,
 				   real* k_dens,
+				   real* k_inv_dens,				   
 				   real* k_mass,				    
 				   int*  k_particle_index,
 				   int*  k_cell_start,
 				   int*  k_cell_end,
 				   int*  k_type,
+				   real* k_Pixx_over_dens_sq,
+				   real* k_Pixy_over_dens_sq,
+				   real* k_Piyy_over_dens_sq,
+				   real* k_Pixz_over_dens_sq,
+				   real* k_Piyz_over_dens_sq,
+				   real* k_Pizz_over_dens_sq,				   
 				   real* k_fx_wall,
 				   real* k_fy_wall,
 				   real* k_fz_wall,
@@ -75,33 +82,28 @@ int class_system::calculate_forces(dim3 numBlocks,
 				   int*  k_colloids_start,
 				   int*  k_coll_index,
 				   int*  k_coll_cell_start,
-				   int*  k_coll_cell_end) {
+				   int*  k_coll_cell_end,
+				   float4* k_posf) {
 
   cudaError_t cuda_err;
   int error;
 
+  //---- Positions in float ----
+  kernel_build_posf<<<numBlocks, threadsPerBlock>>>(k_x, k_y, k_z, k_type, k_particle_index, k_posf);
+
   //---- Densities are calculated ----
   error = calculate_density(numBlocks, threadsPerBlock, k_x, k_y, k_z, k_dens,
-		    k_particle_index, k_cell_start, k_cell_end);
+			    k_inv_dens, k_particle_index, k_cell_start, k_cell_end, k_posf);
   if (error != 0)
     return 1;
 
-  //--- Velocity gradient tensor is calculated --
-  error = calculate_vel_gradient(numBlocks, threadsPerBlock,
-				 k_x, k_y, k_z,
-				 k_vx, k_vy, k_vz,
-				 k_gradvxx, k_gradvxy, k_gradvxz,
-				 k_gradvyx, k_gradvyy, k_gradvyz,
-				 k_gradvzx, k_gradvzy, k_gradvzz,			  
-				 k_dens, k_particle_index, k_cell_start, k_cell_end,
-				 k_type, k_coll_x, k_coll_y, k_coll_z,
-				 k_coll_vx, k_coll_vy, k_coll_vz,
-				 k_coll_omegax, k_coll_omegay, k_coll_omegaz);
-  if (error != 0)
-    return 1;
-  
   //---- Pressure is calculated ----
-  error = calculate_pressure(numBlocks, threadsPerBlock, k_press, k_dens, k_mass);
+  error = calculate_pressure(numBlocks, threadsPerBlock, k_press,
+			     k_dens, k_mass, k_inv_dens,
+			     k_cxx, k_cxy, k_cyy, k_cxz, k_cyz, k_czz,
+			     k_Pixx_over_dens_sq, k_Pixy_over_dens_sq,
+			     k_Piyy_over_dens_sq, k_Pixz_over_dens_sq,
+			     k_Piyz_over_dens_sq, k_Pizz_over_dens_sq);
   if (error != 0)
     return 1;  
   
@@ -110,16 +112,23 @@ int class_system::calculate_forces(dim3 numBlocks,
   cudaDeviceSynchronize();  // We require the kernel to end to continue
     
   // forces are calculated
-  kernel_forces<<<numBlocks, threadsPerBlock>>>(k_x, k_y, k_z, k_vx, k_vy, k_vz,
-						k_cxx, k_cxy, k_cyy, k_cxz, k_cyz, k_czz,
-						k_fx, k_fy, k_fz,
-						k_press, k_dens,
-						k_mass, k_particle_index,
-						k_cell_start, k_cell_end,
-						k_type,
-						k_coll_x, k_coll_y, k_coll_z,
-						k_coll_vx, k_coll_vy, k_coll_vz,
-						k_coll_omegax, k_coll_omegay, k_coll_omegaz);
+  kernel_forces_and_vel_gradients<<<numBlocks, threadsPerBlock>>>(k_x, k_y, k_z, k_vx, k_vy, k_vz,
+								  k_fx, k_fy, k_fz,
+								  k_gradvxx, k_gradvxy, k_gradvxz,
+								  k_gradvyx, k_gradvyy, k_gradvyz,
+								  k_gradvzx, k_gradvzy, k_gradvzz,
+								  k_inv_dens, k_particle_index,
+								  k_cell_start, k_cell_end, k_type,
+								  k_Pixx_over_dens_sq,
+								  k_Pixy_over_dens_sq,
+								  k_Piyy_over_dens_sq,
+								  k_Pixz_over_dens_sq,
+								  k_Piyz_over_dens_sq,
+								  k_Pizz_over_dens_sq,
+								  k_coll_x, k_coll_y, k_coll_z,
+								  k_coll_vx, k_coll_vy, k_coll_vz,
+								  k_coll_omegax, k_coll_omegay,
+								  k_coll_omegaz, k_posf);
   cuda_err = cudaGetLastError();
   if (cuda_err != cudaSuccess) {
     printf("Error in kernel_forces: %s\n", cudaGetErrorString(cuda_err));

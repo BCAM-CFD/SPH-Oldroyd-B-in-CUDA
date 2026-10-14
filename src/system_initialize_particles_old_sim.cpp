@@ -27,7 +27,7 @@ int class_system::initialize_particles_old_sim() {
   //------ Variables to be read --------
   std::vector<real> x_r, y_r, z_r, vx_r, vy_r, vz_r, mass_r, type_r,
     cxx_r, cxy_r, cyy_r, cxz_r, cyz_r, czz_r;
-  float xi, yi, zi, vxi, vyi, vzi, massi, typei,
+  real xi, yi, zi, vxi, vyi, vzi, massi, typei,
     cxxi, cxyi, cyyi, cxzi, cyzi, czzi;
 
   //------ The file is read -------

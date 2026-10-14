@@ -10,10 +10,12 @@ email: a.vazquez-quesada@fisfun.uned.es
 __constant__ int N;
 __constant__ int dim;
 __constant__ real L[3];
+__constant__ float Lf[3];
 __constant__ real cw;
 __constant__ real c_gradw;
 __constant__ real rcut;
 __constant__ real rcutsq;
+__constant__ float rcutsq_f;
 __constant__ real rcut_inv;
 __constant__ real csq;
 __constant__ real rho0;

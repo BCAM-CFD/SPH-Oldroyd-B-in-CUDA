@@ -22,6 +22,7 @@ int class_system::copy_pointers_to_device(real** k_x,
 					  real** k_fy,
 					  real** k_fz,
 					  real** k_dens,
+					  real** k_inv_dens,
 					  real** k_press,
 					  int**  k_particle_cell,
 					  int**  k_particle_index,
@@ -29,6 +30,12 @@ int class_system::copy_pointers_to_device(real** k_x,
 					  int**  k_cell_end,
 					  real** k_kin_energy,
 					  int**  k_type,
+					  real** k_Pixx_over_dens_sq,
+					  real** k_Pixy_over_dens_sq,
+					  real** k_Piyy_over_dens_sq,
+					  real** k_Pixz_over_dens_sq,
+					  real** k_Piyz_over_dens_sq,
+					  real** k_Pizz_over_dens_sq,
 					  real** k_cxx,
 					  real** k_cxy,
 					  real** k_cyy,
@@ -83,7 +90,8 @@ int class_system::copy_pointers_to_device(real** k_x,
 					  int**  k_coll_cell,
 					  int**  k_coll_index,
 					  int**  k_coll_cell_start,
-					  int**  k_coll_cell_end) {
+					  int**  k_coll_cell_end,
+					  float4** k_posf) {
 
   // --- For debugging ---
   // The general sintaxis is
@@ -139,6 +147,7 @@ int class_system::copy_pointers_to_device(real** k_x,
     error_cuda = cudaMalloc(k_y_center      , Nlist_colloids * sizeof(real));
     error_cuda = cudaMalloc(k_z_center      , Nlist_colloids * sizeof(real));
   }
+  error_cuda = cudaMalloc(k_posf           , N * sizeof(float4));
 
   error_cuda = cudaMemcpy(*k_x,     x,     N * sizeof(real), cudaMemcpyHostToDevice);
   error_cuda = cudaMemcpy(*k_y,     y,     N * sizeof(real), cudaMemcpyHostToDevice);
@@ -179,9 +188,9 @@ int class_system::copy_pointers_to_device(real** k_x,
     error_cuda = cudaMemcpy(*k_coll_quatx,  coll_quatx , N_colloids * sizeof(real), cudaMemcpyHostToDevice);
     error_cuda = cudaMemcpy(*k_coll_quaty,  coll_quaty , N_colloids * sizeof(real), cudaMemcpyHostToDevice);
     error_cuda = cudaMemcpy(*k_coll_quatz,  coll_quatz , N_colloids * sizeof(real), cudaMemcpyHostToDevice);
-    error_cuda = cudaMemcpy(*k_x_center,   x_center    , Nlist_colloids * sizeof(real), cudaMemcpyHostToDevice);
-    error_cuda = cudaMemcpy(*k_y_center,   y_center    , Nlist_colloids * sizeof(real), cudaMemcpyHostToDevice);
-    error_cuda = cudaMemcpy(*k_z_center,   z_center    , Nlist_colloids * sizeof(real), cudaMemcpyHostToDevice);
+    error_cuda = cudaMemcpy(*k_x_center  ,  x_center   , Nlist_colloids * sizeof(real), cudaMemcpyHostToDevice);
+    error_cuda = cudaMemcpy(*k_y_center  ,  y_center   , Nlist_colloids * sizeof(real), cudaMemcpyHostToDevice);
+    error_cuda = cudaMemcpy(*k_z_center  ,  z_center   , Nlist_colloids * sizeof(real), cudaMemcpyHostToDevice);
   }
 
   //--------- Other variables --------------
@@ -189,6 +198,7 @@ int class_system::copy_pointers_to_device(real** k_x,
   error_cuda = cudaMalloc(k_fy             , N * sizeof(real));
   error_cuda = cudaMalloc(k_fz             , N * sizeof(real));
   error_cuda = cudaMalloc(k_dens           , N * sizeof(real));
+  error_cuda = cudaMalloc(k_inv_dens       , N * sizeof(real));  
   error_cuda = cudaMalloc(k_press          , N * sizeof(real));
   error_cuda = cudaMalloc(k_dcdt_xx        , N * sizeof(real));
   error_cuda = cudaMalloc(k_dcdt_xy        , N * sizeof(real));
@@ -204,7 +214,13 @@ int class_system::copy_pointers_to_device(real** k_x,
   error_cuda = cudaMalloc(k_gradvyz        , N * sizeof(real));
   error_cuda = cudaMalloc(k_gradvzx        , N * sizeof(real));
   error_cuda = cudaMalloc(k_gradvzy        , N * sizeof(real));
-  error_cuda = cudaMalloc(k_gradvzz        , N * sizeof(real));    
+  error_cuda = cudaMalloc(k_gradvzz        , N * sizeof(real));
+  error_cuda = cudaMalloc(k_Pixx_over_dens_sq, N * sizeof(real));
+  error_cuda = cudaMalloc(k_Pixy_over_dens_sq, N * sizeof(real));
+  error_cuda = cudaMalloc(k_Piyy_over_dens_sq, N * sizeof(real));
+  error_cuda = cudaMalloc(k_Pixz_over_dens_sq, N * sizeof(real));
+  error_cuda = cudaMalloc(k_Piyz_over_dens_sq, N * sizeof(real));
+  error_cuda = cudaMalloc(k_Pizz_over_dens_sq, N * sizeof(real));      
   error_cuda = cudaMalloc(k_particle_cell  , N * sizeof(int));
   error_cuda = cudaMalloc(k_particle_index , N * sizeof(int));
   error_cuda = cudaMalloc(k_cell_start     , Ntotal_cells * sizeof(int));
@@ -230,7 +246,8 @@ int class_system::copy_pointers_to_device(real** k_x,
   error_cuda = cudaMemset(*k_fx             , 0, N * sizeof(real));
   error_cuda = cudaMemset(*k_fy             , 0, N * sizeof(real));
   error_cuda = cudaMemset(*k_fz             , 0, N * sizeof(real));
-  error_cuda = cudaMemset(*k_dens           , 0, N * sizeof(real));              
+  error_cuda = cudaMemset(*k_dens           , 0, N * sizeof(real));
+  error_cuda = cudaMemset(*k_inv_dens       , 0, N * sizeof(real));                
   error_cuda = cudaMemset(*k_press          , 0, N * sizeof(real));
   error_cuda = cudaMemset(*k_dcdt_xx        , 0, N * sizeof(real));
   error_cuda = cudaMemset(*k_dcdt_xy        , 0, N * sizeof(real));
@@ -246,7 +263,13 @@ int class_system::copy_pointers_to_device(real** k_x,
   error_cuda = cudaMemset(*k_gradvyz        , 0, N * sizeof(real));
   error_cuda = cudaMemset(*k_gradvzx        , 0, N * sizeof(real));
   error_cuda = cudaMemset(*k_gradvzy        , 0, N * sizeof(real));
-  error_cuda = cudaMemset(*k_gradvzz        , 0, N * sizeof(real));    
+  error_cuda = cudaMemset(*k_gradvzz        , 0, N * sizeof(real));
+  error_cuda = cudaMemset(*k_Pixx_over_dens_sq, 0, N * sizeof(real));
+  error_cuda = cudaMemset(*k_Pixy_over_dens_sq, 0, N * sizeof(real));
+  error_cuda = cudaMemset(*k_Piyy_over_dens_sq, 0, N * sizeof(real));
+  error_cuda = cudaMemset(*k_Pixz_over_dens_sq, 0, N * sizeof(real));
+  error_cuda = cudaMemset(*k_Piyz_over_dens_sq, 0, N * sizeof(real));
+  error_cuda = cudaMemset(*k_Pizz_over_dens_sq, 0, N * sizeof(real));  
   error_cuda = cudaMemset(*k_particle_cell  , 0, N * sizeof(int));              
   error_cuda = cudaMemset(*k_particle_index , 0, N * sizeof(int));
   error_cuda = cudaMemset(*k_cell_start     , 0, Ntotal_cells * sizeof(int));              
