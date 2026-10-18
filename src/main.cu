@@ -69,9 +69,9 @@ int main() {
   real coll_radius     = 1.0;
   real coll_density    = 1.0;
   real coll_x_data[MAX_COLLOIDS][MAX_VALUES_PER_COLLOID];
-  int  coll_move       = 0;
+  int  coll_move       = 1;
   real coll_repulsion_cuton  = 0.001;  
-  int  new_sim         = 0;
+  int  new_sim         = 1;
   real F0_repulsion    = 1.0;
   real tau_repulsion   = 0.01;
 
@@ -241,12 +241,9 @@ int main() {
 				      &k_fz, &k_dens, &k_inv_dens,
 				      &k_press, &k_particle_cell, &k_particle_index,
 				      &k_cell_start, &k_cell_end, &k_kin_energy, &k_type,
-				      &k_Pixx_over_dens_sq,
-				      &k_Pixy_over_dens_sq,
-				      &k_Piyy_over_dens_sq,
-				      &k_Pixz_over_dens_sq,
-				      &k_Piyz_over_dens_sq,
-				      &k_Pizz_over_dens_sq,
+				      &k_Pixx_over_dens_sq, &k_Pixy_over_dens_sq,
+				      &k_Piyy_over_dens_sq, &k_Pixz_over_dens_sq,
+				      &k_Piyz_over_dens_sq, &k_Pizz_over_dens_sq,
 				      &k_cxx, &k_cxy, &k_cyy,
 				      &k_cxz, &k_cyz, &k_czz,
 				      &k_dcdt_xx, &k_dcdt_xy, &k_dcdt_yy,
@@ -321,7 +318,6 @@ int main() {
 			       k_Piyy_over_dens_sq, k_Pixz_over_dens_sq,
 			       k_Piyz_over_dens_sq, k_Pizz_over_dens_sq,
 			       k_fx_wall, k_fy_wall, k_fz_wall,
-			       k_walls_list, k_walls_start,   
 			       k_coll_x, k_coll_y, k_coll_z,
 			       k_coll_vx, k_coll_vy, k_coll_vz,
 			       k_coll_omegax, k_coll_omegay, k_coll_omegaz,
@@ -340,6 +336,7 @@ int main() {
 		   k_fx, k_fy, k_fz, k_mass, k_type, k_dens, k_press,
 		   k_cxx, k_cxy, k_cyy, k_cxz, k_cyz, k_czz,
 		   k_fx_wall, k_fy_wall, k_fz_wall,
+		   k_walls_list, k_walls_start,
 		   k_coll_x, k_coll_y, k_coll_z,
 		   k_coll_vx, k_coll_vy, k_coll_vz,
 		   k_coll_omegax, k_coll_omegay, k_coll_omegaz,			 
@@ -407,7 +404,6 @@ int main() {
 				 k_Piyy_over_dens_sq, k_Pixz_over_dens_sq,
 				 k_Piyz_over_dens_sq, k_Pizz_over_dens_sq,
 				 k_fx_wall, k_fy_wall, k_fz_wall,
-				 k_walls_list, k_walls_start,   
 				 k_coll_x, k_coll_y, k_coll_z,
 				 k_coll_vx, k_coll_vy, k_coll_vz,
 				 k_coll_omegax, k_coll_omegay, k_coll_omegaz,
@@ -442,6 +438,7 @@ int main() {
 		     k_fx, k_fy, k_fz, k_mass, k_type, k_dens, k_press,
 		     k_cxx, k_cxy, k_cyy, k_cxz, k_cyz, k_czz,
 		     k_fx_wall, k_fy_wall, k_fz_wall,
+		     k_walls_list, k_walls_start,
 		     k_coll_x, k_coll_y, k_coll_z,
 		     k_coll_vx, k_coll_vy, k_coll_vz,
 		     k_coll_omegax, k_coll_omegay, k_coll_omegaz,			 
@@ -581,12 +578,12 @@ __host__ void print_main_vars(real delta_t,
   std::cout << "Output frequency macro    = " << freq_macro  << "\n";
   std::cout << "Output frequency walls    = " << freq_walls  << "\n";
   std::cout << "Output frequency colloids = " << freq_colloids  << "\n";
-  if (new_sim == 0)
+  if (new_sim == 1)
     std::cout << "New simulation?           = Yes\n";
   else
     std::cout << "New simulation?           = No\n";    
   if (N_coll > 0)
-    if (coll_move == 0) 
+    if (coll_move == 1) 
       std::cout << "Are colloids moving?      = Yes\n";
     else
       std::cout << "Are colloids moving?      = No\n";

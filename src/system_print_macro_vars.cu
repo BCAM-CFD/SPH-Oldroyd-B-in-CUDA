@@ -25,7 +25,7 @@ void class_system::print_macro_vars(dim3 numBlocks,
 				    int step) {
   //--  Macro variables are set to zero --
   kernel_macro_vars_to_zero<<<1, 1>>>(kin_energy);
-  cudaDeviceSynchronize();  // We require the kernel to end to continue
+  // cudaDeviceSynchronize();  // We require the kernel to end to continue
 
   //-- Macro variables are calculated --
   kernel_calculate_macro_vars<<<numBlocks, threadsPerBlock>>>(k_mass, k_vx, k_vy, k_vz, k_type,

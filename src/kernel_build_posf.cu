@@ -9,6 +9,8 @@ email: a.vazquez-quesada@fisfun.uned.es
 #include "config.h"
 
 // This function copies positions (in float) and type.
+// Positions in float type allow to check faster if the particles are neighbours,
+// avoiding calculation in double.
 __global__ void kernel_build_posf(real* __restrict__ x,
                                   real* __restrict__ y,
                                   real* __restrict__ z,

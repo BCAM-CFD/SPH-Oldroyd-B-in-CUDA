@@ -65,7 +65,7 @@ int class_system::V_Verlet_step2(dim3 numBlocks,
   }
 
   //--- Particles of colloids are moved ---
-  if (coll_move == 0) 
+  if (coll_move == 1) 
     if (N_colloids > 0) {
       kernel_move_colloids_VV_part2<<<numBlocks, threadsPerBlock>>>(k_coll_vx,
 								    k_coll_vy,
@@ -86,7 +86,7 @@ int class_system::V_Verlet_step2(dim3 numBlocks,
       }
     }
   
-  cudaDeviceSynchronize();  // We require the kernel to end to continue    
+  // cudaDeviceSynchronize();  // We require the kernel to end to continue    
 
   return 0;
 

@@ -36,12 +36,6 @@ int class_system::calculate_force_colloids(dim3  numBlocks,
 
   cudaError_t cuda_err;
 
-  //---- Colloidal forces and torques are set to zero ----
-  kernel_colloid_forces_to_zero<<<numBlocks, threadsPerBlock>>>(k_fx_colloid, k_fy_colloid,
-								k_fz_colloid, k_tx_colloid,
-								k_ty_colloid, k_tz_colloid);
-  cudaDeviceSynchronize();  // We require the kernel to end to continue  
-
   //---- Forces and torques of the computational particles are collected ----
   kernel_collect_force_colloids<<<numBlocks, threadsPerBlock>>>(k_fx_colloid, k_fy_colloid,
 								k_fz_colloid,
@@ -58,7 +52,7 @@ int class_system::calculate_force_colloids(dim3  numBlocks,
     printf("Error in kernel_force_colloids: %s\n", cudaGetErrorString(cuda_err));
     return 1;
   }  	
-  cudaDeviceSynchronize();  // We require the kernel to end to continue
+  // cudaDeviceSynchronize();  // We require the kernel to end to continue
 
   //---- Repulsion forces are calculated ----
   if (N_colloids >= 2)  {
@@ -74,7 +68,7 @@ int class_system::calculate_force_colloids(dim3  numBlocks,
       printf("Error in kernel_repulsion_force_colloids: %s\n", cudaGetErrorString(cuda_err));
       return 1;
     }  	
-    cudaDeviceSynchronize();  // We require the kernel to end to continue
+    // cudaDeviceSynchronize();  // We require the kernel to end to continue
   }
   
   return 0;

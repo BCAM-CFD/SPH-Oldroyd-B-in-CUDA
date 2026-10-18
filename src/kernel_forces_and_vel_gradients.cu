@@ -29,12 +29,12 @@ __global__ void kernel_forces_and_vel_gradients(real* __restrict__ x,
 						real* __restrict__ gradvyz,
 						real* __restrict__ gradvzx,
 						real* __restrict__ gradvzy,
-						real* __restrict__ gradvzz,			      
-						real* __restrict__ inv_dens,			      
-						int*  __restrict__  particle_index,
-						int*  __restrict__  cell_start,
-						int*  __restrict__  cell_end,
-						int*  __restrict__  type,
+						real* __restrict__ gradvzz,
+						real* __restrict__ inv_dens,
+						int*  __restrict__ particle_index,
+						int*  __restrict__ cell_start,
+						int*  __restrict__ cell_end,
+						int*  __restrict__ type,
 						real* __restrict__ Pixx_over_dens_sq,
 						real* __restrict__ Pixy_over_dens_sq,
 						real* __restrict__ Piyy_over_dens_sq,
@@ -638,13 +638,13 @@ __global__ void kernel_forces_and_vel_gradients(real* __restrict__ x,
 		    if (ri_coll[1] < -half_L1)
 		      ri_coll[1] += L1;
 		  }
-		    if (ri_coll[2] > half_L2)
-		      ri_coll[2] -= L2;
-		    if (ri_coll[2] < -half_L2)
-		      ri_coll[2] += L2;
-		    real dist_center  = sqrt(ri_coll[0]*ri_coll[0] +
-					     ri_coll[1]*ri_coll[1] +
-					     ri_coll[2]*ri_coll[2]);		    
+		  if (ri_coll[2] > half_L2)
+		    ri_coll[2] -= L2;
+		  if (ri_coll[2] < -half_L2)
+		    ri_coll[2] += L2;
+		  real dist_center  = sqrt(ri_coll[0]*ri_coll[0] +
+					   ri_coll[1]*ri_coll[1] +
+					   ri_coll[2]*ri_coll[2]);		    
 		  real dist_i_surface = dist_center - coll_R;
 		  if (dist_i_surface < 0) { //-- i is inside the colloid --
 		    // To avoid weird behaviors (maybe a bounce back is better)
@@ -858,10 +858,10 @@ __global__ void kernel_forces_and_vel_gradients(real* __restrict__ x,
     }
   
   //-- The force is summed up to the kernel variable --
-  fx[i] += fxi;
-  fy[i] += fyi;
+  fx[i] = fxi;
+  fy[i] = fyi;
   if (dim == 3)
-    fz[i] += fzi;
+    fz[i] = fzi;
 
   //The calculated data is stored in the GPU  
   gradvxx[i] = gradvxx_i;

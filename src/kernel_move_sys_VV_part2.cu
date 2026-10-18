@@ -36,11 +36,11 @@ __global__ void kernel_move_sys_VV_part2(real* __restrict__ vx,
   if (type[i] == 0) { //  If it is from fluid
     real half_dt           = 0.5 * dt;    
     real half_dt_over_mass = half_dt / mass[i];    
-    // Velocity at t + dt/2 
+    // Velocity at t + dt 
     vx[i] = vx[i] + half_dt_over_mass * fx[i];
     vy[i] = vy[i] + half_dt_over_mass * fy[i];
 
-    // Conformation tensor at t + dt/2
+    // Conformation tensor at t + dt
     cxx[i] = cxx[i] + half_dt * dcdt_xx[i]; 
     cxy[i] = cxy[i] + half_dt * dcdt_xy[i];
     cyy[i] = cyy[i] + half_dt * dcdt_yy[i];

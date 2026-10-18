@@ -61,8 +61,6 @@ int class_system::calculate_forces(dim3 numBlocks,
 				   real* k_fx_wall,
 				   real* k_fy_wall,
 				   real* k_fz_wall,
-				   int*  k_walls_list,
-				   int*  k_walls_start,				   
 				   real* k_coll_x,
 				   real* k_coll_y,
 				   real* k_coll_z,
@@ -107,10 +105,6 @@ int class_system::calculate_forces(dim3 numBlocks,
   if (error != 0)
     return 1;  
   
-  // Interparticle forces are set to zero
-  kernel_forces_to_zero<<<numBlocks, threadsPerBlock>>>(k_fx, k_fy, k_fz);
-  cudaDeviceSynchronize();  // We require the kernel to end to continue
-    
   // forces are calculated
   kernel_forces_and_vel_gradients<<<numBlocks, threadsPerBlock>>>(k_x, k_y, k_z, k_vx, k_vy, k_vz,
 								  k_fx, k_fy, k_fz,
@@ -134,7 +128,7 @@ int class_system::calculate_forces(dim3 numBlocks,
     printf("Error in kernel_forces: %s\n", cudaGetErrorString(cuda_err));
     return 1;
   }    
-  cudaDeviceSynchronize();  // We require the kernel to end to continue
+  // cudaDeviceSynchronize();  // We require the kernel to end to continue
 
   //---- External forces are calculated ----
   if (ext_force_type != 0) {
@@ -153,14 +147,7 @@ int class_system::calculate_forces(dim3 numBlocks,
 						k_gradvyx, k_gradvyy, k_gradvyz,
 						k_gradvzx, k_gradvzy, k_gradvzz, k_type);
 
-  //---- Forces on walls are calculated ----
-  if (wall) {
-    error = calculate_force_walls(numBlocks, threadsPerBlock,
-				  k_fx_wall, k_fy_wall, k_fz_wall,
-				  k_fx, k_fy, k_fz, k_walls_list, k_walls_start);
-    if (error != 0)
-      return 1; // End of program
-  }
+  //---- Right now, forces on walls are not calculated here, but at system_print_output----
   
   //---- Forces and torques on colloids are calculated ----
   if (N_colloids > 0) {

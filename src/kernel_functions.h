@@ -100,7 +100,6 @@ __global__ void kernel_order_cell_list(int* __restrict__ particle_cell,
 __global__ void kernel_cell_ranges(int* __restrict__ particle_cell,
 				   int* __restrict__ cell_start,
 				   int* __restrict__ cell_end);
-__global__ void kernel_density_to_zero(real* __restrict__ dens);
 __global__ void kernel_densities(real* __restrict__ x,
 				 real* __restrict__ y,
 				 real* __restrict__ z,
@@ -126,9 +125,6 @@ __global__ void kernel_pressures(real* __restrict__ press,
 				 real* __restrict__ Pixz_over_dens_square,
 				 real* __restrict__ Piyz_over_dens_square,
 				 real* __restrict__ Pizz_over_dens_square);
-__global__ void kernel_forces_to_zero(real* __restrict__ fx,
-				      real* __restrict__ fy,
-				      real* __restrict__ fz);
 __global__ void kernel_forces_and_vel_gradients(real* __restrict__ x,
 						real* __restrict__ y,
 						real* __restrict__ z,
@@ -322,12 +318,6 @@ __global__ void kernel_initialize_cell_colloids(int* __restrict__ coll_cell_star
 __global__ void kernel_cell_colloids_ranges(int* __restrict__ coll_cell,
 					    int* __restrict__ coll_cell_start,
 					    int* __restrict__ coll_cell_end);
-__global__ void kernel_colloid_forces_to_zero(real* __restrict__ fx_colloid,
-					      real* __restrict__ fy_colloid,
-					      real* __restrict__ fz_colloid,
-					      real* __restrict__ tx_colloid,
-					      real* __restrict__ ty_colloid,
-					      real* __restrict__ tz_colloid);
 __global__ void kernel_repulsion_force_colloids(real* __restrict__ coll_x,
 						real* __restrict__ coll_y,
 						real* __restrict__ coll_z,

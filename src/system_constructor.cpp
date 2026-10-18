@@ -57,7 +57,7 @@ void class_system::constructor(int Nxyz[3],
 
   // If the particles are read from a file, these quantities are
   // constructed ar system_initialize_particles_old_sim
-  if (new_sim == 0) {
+  if (new_sim == 1) {
     //-- Walls are perpendicular to the y direction --
     int Ny;
     int extra_N_wall = 2*ceil(overlap);

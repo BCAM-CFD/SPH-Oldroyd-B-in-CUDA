@@ -27,6 +27,8 @@ void class_system::print_output(dim3 numBlocks,
 				real* k_fx_wall,
 				real* k_fy_wall,
 				real* k_fz_wall,
+				int*  k_walls_list,
+				int*  k_walls_start,				
 				real* k_coll_x,
 				real* k_coll_y,
 				real* k_coll_z,
@@ -55,8 +57,12 @@ void class_system::print_output(dim3 numBlocks,
 		    k_cxx, k_cxy, k_cyy, k_cxz, k_cyz, k_czz, step);
   //---- Walls are written ----
   if (wall == 1)
-    if (step % freq_walls== 0)
+    if (step % freq_walls== 0) {
+      calculate_force_walls(numBlocks, threadsPerBlock,
+			    k_fx_wall, k_fy_wall, k_fz_wall,
+			    k_fx, k_fy, k_fz, k_walls_list, k_walls_start);
       print_walls(k_fx_wall, k_fy_wall, k_fz_wall, step);
+    }
   //---- Colloids are written ----
   if (N_colloids > 0)
     if (step % freq_colloids == 0)

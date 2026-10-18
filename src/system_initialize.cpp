@@ -107,7 +107,6 @@ int class_system::initialize(int  Nxyz[3],
   double rcut_filter = sqrt(rcutsq) * (1.0 + 1.0e-3) + 16.0 * Lmax * FLT_EPSILON;
   this->rcutsq_f     = (float) (rcut_filter * rcut_filter);  
   
-
   // About Morris boundary conditions
   // In Morris 1997 beta_max is 1.5  
   this->beta_max = 1.5;
@@ -264,7 +263,7 @@ int class_system::initialize(int  Nxyz[3],
   }
 
   //--- Computational particles are initialized ---
-  if (new_sim == 0) {
+  if (new_sim == 1) {
     error_out = this->initialize_particles_new_sim(Nxyz, dx);
     if (error_out != 0)
       return 1;

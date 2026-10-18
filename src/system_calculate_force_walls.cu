@@ -31,7 +31,7 @@ int class_system::calculate_force_walls(dim3 numBlocks,
 	printf("Error in kernel_force_walls: %s\n", cudaGetErrorString(cuda_err));
 	return 1;
       }  	
-      cudaDeviceSynchronize();  // We require the kernel to end to continue
+      // cudaDeviceSynchronize();  // We require the kernel to end to continue
       
       return 0;
 }

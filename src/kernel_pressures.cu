@@ -33,7 +33,7 @@ __global__ void kernel_pressures(real* __restrict__ press,
   real press_i = csq * (mass[i] * dens[i] - rho0);
   press[i] = press_i;
 
-  real inv_dens_i = inv_dens[i];
+  real inv_dens_i    = inv_dens[i];
   real inv_dens_i_sq = inv_dens_i * inv_dens_i;
 
   // We consider c tensor symmetric, so Pi tensor is also symmetric

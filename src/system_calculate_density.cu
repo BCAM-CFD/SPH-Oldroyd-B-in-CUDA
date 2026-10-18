@@ -26,24 +26,16 @@ int class_system::calculate_density(dim3 numBlocks,
 
     cudaError_t cuda_err;
 
-    //------ Densities are set to zero -------
-    kernel_density_to_zero<<<numBlocks, threadsPerBlock>>>(k_dens);
-    cuda_err = cudaGetLastError();
-    if (cuda_err != cudaSuccess) {
-      printf("Error in kernel_density to zero: %s\n", cudaGetErrorString(cuda_err));
-      return 1;
-    }          
-    cudaDeviceSynchronize();  // We require the kernel to end to continue
-
     //------ Densities are calculated ----------
     kernel_densities<<<numBlocks, threadsPerBlock>>>(k_x, k_y, k_z, k_dens, k_inv_dens,
-						     k_particle_index, k_cell_start, k_cell_end, k_posf);
+						     k_particle_index, k_cell_start,
+						     k_cell_end, k_posf);
     cuda_err = cudaGetLastError();
     if (cuda_err != cudaSuccess) {
       printf("Error in kernel_densities: %s\n", cudaGetErrorString(cuda_err));
       return 1;
     }      
-    cudaDeviceSynchronize();  // We require the kernel to end to continue    
+    // cudaDeviceSynchronize();  // We require the kernel to end to continue    
 
     return 0;
 

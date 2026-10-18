@@ -32,22 +32,17 @@ __global__ void kernel_collect_force_colloids(real* __restrict__ fx_colloid,
   if (i >= N_colloids) return;
   // i is the identity of the colloid
 
-  real fx_colloid_i = fx_colloid[i];
-  real fy_colloid_i = fy_colloid[i];
-  real tz_colloid_i = tz_colloid[i];
+  real fx_colloid_i = fx_colloid[i] = 0;
+  real fy_colloid_i = fy_colloid[i] = 0;
+  real tz_colloid_i = tz_colloid[i] = 0;
   real fz_colloid_i;
   real tx_colloid_i;
   real ty_colloid_i;  
   if (dim == 3) {
-    fz_colloid_i = fz_colloid[i];
-    tx_colloid_i = tx_colloid[i];
-    ty_colloid_i = ty_colloid[i];
+    fz_colloid_i = fz_colloid[i] = 0;
+    tx_colloid_i = tx_colloid[i] = 0;
+    ty_colloid_i = ty_colloid[i] = 0;
   }  
-  if (dim == 3) {
-    fz_colloid_i = fz_colloid[i];
-    ty_colloid_i = ty_colloid[i];
-    tz_colloid_i = tz_colloid[i];
-  }
   int colloids_end_i;
   if (i < N_colloids - 1)
     colloids_end_i = colloids_start[i+1] - 1;

@@ -30,7 +30,7 @@ int class_system::calculate_external_forces(dim3 numBlocks,
     printf("Error in kernel_ext_force: %s\n", cudaGetErrorString(cuda_err));
     return 1;
   }  	
-  cudaDeviceSynchronize();  // We require the kernel to end to continue
+  // cudaDeviceSynchronize();  // We require the kernel to end to continue
   
   return 0;
   
