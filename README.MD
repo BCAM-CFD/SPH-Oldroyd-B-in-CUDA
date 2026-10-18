@@ -107,9 +107,9 @@ To run the program, execute:
 
 **coll_move**  -> wether colloids are moving or fixed
 
-			  0: colloids can move.
+			  0: colloids are fixed.
 
-	   		  1: colloids are fixed.
+	   		  1: colloids can move.
 
 **coll_x**     -> Position of one colloid. Put as many coll_x as needed.
 
@@ -121,10 +121,9 @@ To run the program, execute:
 
 **new_sim** -> The simulation is new, or it is restarting from a previous simulation
 
-		   0: new simulation.
+		   0: existing simulation 
 
-	       1: existing simulation (the orientation of the magnetic field is not currently read in this option)
-
+	       1: new simulation
 ## Key of the output files
 
 micro: 
