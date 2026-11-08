@@ -130,6 +130,7 @@ To run the program, execute:
 		   0: existing simulation 
 
 	       1: new simulation
+
 ## Key of the output files
 
 micro: 
