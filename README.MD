@@ -127,9 +127,9 @@ To run the program, execute:
 
 **new_sim** -> The simulation is new, or it is restarting from a previous simulation
 
-		   0: existing simulation 
+			  0: existing simulation.
 
-	       1: new simulation
+	   		  1: new simulation.
 
 ## Key of the output files
 
