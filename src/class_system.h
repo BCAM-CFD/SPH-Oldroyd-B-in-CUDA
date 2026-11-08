@@ -139,6 +139,16 @@ struct class_system {
 
   real beta_max;   // Related to Morris boundary conditions
 
+  real sweep_tol; // Related to the semi-implicit lubrication scheme
+  int  N_sweep_max;
+  int  N_sweep;
+  real coll_lub_cutoff;
+  real coll_lub_cuton;
+  real rcutoff_coll_lub;
+  real rcutoff_coll_lub_sq;
+  real rcuton_coll_lub;
+  real rcuton_coll_lub_sq;    
+ 
   /********* Subroutines **********/
   int read_input(int   N[3],
 		 real  L[3],
@@ -171,6 +181,9 @@ struct class_system {
 		 real& coll_repulsion_cuton,
 		 real& F0_repulsion,
 		 real& tau_repulsion,
+		 real& sweep_tolerance,
+		 int&  N_sweep_maximum,
+		 real& colloid_lub_cuton,		 
 		 int&  new_sim);
   void initialize_pointers();
   void constructor(int  Nxyz[3],
@@ -203,6 +216,9 @@ struct class_system {
 		 real coll_repulsion_cuton,
 		 real F0_repulsion,
 		 real tau_repulsion,
+		 real sweep_tolerance,
+		 int  N_sweep_maximum,
+		 real colloid_lub_cuton,		 
 		 int  new_sim);
   int initialize_particles_new_sim(int  Nxyz[3],
 				   real dx[3]);
@@ -330,6 +346,9 @@ struct class_system {
 			      real** k_fx_colloid,
 			      real** k_fy_colloid,
 			      real** k_fz_colloid,
+			      real** k_fx_rep_colloid,
+			      real** k_fy_rep_colloid,
+			      real** k_fz_rep_colloid,			      
 			      real** k_tx_colloid,
 			      real** k_ty_colloid,
 			      real** k_tz_colloid,
@@ -444,6 +463,9 @@ struct class_system {
 		       real* k_fx_colloid,
 		       real* k_fy_colloid,
 		       real* k_fz_colloid,
+		       real* k_fx_rep_colloid,
+		       real* k_fy_rep_colloid,
+		       real* k_fz_rep_colloid,		       
 		       real* k_tx_colloid,
 		       real* k_ty_colloid,
 		       real* k_tz_colloid,
@@ -481,6 +503,9 @@ struct class_system {
 			       real* k_fx_colloid,
 			       real* k_fy_colloid,
 			       real* k_fz_colloid,
+			       real* k_fx_rep_colloid,
+			       real* k_fy_rep_colloid,
+			       real* k_fz_rep_colloid,			       
 			       real* k_tx_colloid,
 			       real* k_ty_colloid,
 			       real* k_tz_colloid,
@@ -537,6 +562,9 @@ struct class_system {
 		     real* k_fx_colloid,
 		     real* k_fy_colloid,
 		     real* k_fz_colloid,
+		     real* k_fx_rep_colloid,
+		     real* k_fy_rep_colloid,
+		     real* k_fz_rep_colloid,		     
 		     real* k_tx_colloid,
 		     real* k_ty_colloid,
 		     real* k_tz_colloid,		     
@@ -545,6 +573,11 @@ struct class_system {
 		     real* k_z_center,
 		     int*  k_colloids_list,
 		     int*  k_colloids_start,
+		     int*  k_coll_cell_start,
+		     int*  k_coll_cell_end,
+		     int*  k_coll_index,
+		     real  eta,
+		     real  dt,
 		     int   coll_move);
   int V_Verlet_step2(dim3 numBlocks,
 		     dim3 threadsPerBlock,
@@ -577,10 +610,33 @@ struct class_system {
 		     real* k_fx_colloid,
 		     real* k_fy_colloid,
 		     real* k_fz_colloid,
+		     real* k_fx_rep_colloid,
+		     real* k_fy_rep_colloid,
+		     real* k_fz_rep_colloid,		     
 		     real* k_tx_colloid,
 		     real* k_ty_colloid,
 		     real* k_tz_colloid,		     
 		     int   coll_move);
+  int colloids_vel_implicit(real* k_coll_x,
+			    real* k_coll_y,
+			    real* k_coll_z,
+			    real* k_coll_vx,
+			    real* k_coll_vy,
+			    real* k_coll_vz,
+			    real* k_coll_omegax,
+			    real* k_coll_omegay,
+			    real* k_coll_omegaz,
+			    int*  k_coll_cell_start,
+			    int*  k_coll_cell_end,
+			    int*  k_coll_index,
+			    real  eta,
+			    real  dt);
+  int colloids_vel_implicit_iteration(real  eta,
+				      real  dt,
+				      int   N_sweep_used,
+				      int*  coll_cell_start,
+				      int*  coll_cell_end,
+				      int*  coll_index);    
   void print_macro_vars(dim3 numBlocks,
 			dim3 threadsPerBlock,
 			real* k_mass,

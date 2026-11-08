@@ -53,6 +53,9 @@ int class_system::V_Verlet_step1(dim3 numBlocks,
 				 real* k_fx_colloid,
 				 real* k_fy_colloid,
 				 real* k_fz_colloid,
+				 real* k_fx_rep_colloid,
+				 real* k_fy_rep_colloid,
+				 real* k_fz_rep_colloid,				 
 				 real* k_tx_colloid,
 				 real* k_ty_colloid,
 				 real* k_tz_colloid,				 
@@ -61,9 +64,15 @@ int class_system::V_Verlet_step1(dim3 numBlocks,
 				 real* k_z_center,
 				 int*  k_colloids_list,
 				 int*  k_colloids_start,
+				 int*  k_coll_cell_start,
+				 int*  k_coll_cell_end,
+				 int*  k_coll_index,
+				 real  eta,
+				 real  dt, 
 				 int   coll_move) {
 
   cudaError_t cuda_err;
+  int       error_out;
 
   //--- Fluid and walls particles are moved ---  
   kernel_move_sys_VV_part1<<<numBlocks, threadsPerBlock>>>(k_x, k_y, k_z,
@@ -82,8 +91,35 @@ int class_system::V_Verlet_step1(dim3 numBlocks,
   }
 
   //--- Particles of colloids are moved ---
-  if (N_colloids > 0) {
-    if (coll_move == 1)
+  if (N_colloids > 0)
+    if (coll_move == 1) {
+      // Colloids velocities are calculated at time t + Delta t,
+      // according to the collected SPH force
+      // V' = Vn + F_sph * Delta t
+      kernel_vel_colloids_SPH<<<numBlocks, threadsPerBlock>>>(k_coll_vx,
+							      k_coll_vy,
+							      k_coll_vz,
+							      k_coll_omegax,
+							      k_coll_omegay,
+							      k_coll_omegaz,
+							      k_fx_colloid,
+							      k_fy_colloid,
+							      k_fz_colloid,
+							      k_tx_colloid,
+							      k_ty_colloid,
+							      k_tz_colloid);
+
+      //-- The lubrication correction is done --
+      if (N_colloids >= 2) {
+	error_out = colloids_vel_implicit(k_coll_x, k_coll_y, k_coll_z,
+					  k_coll_vx, k_coll_vy, k_coll_vz,
+					  k_coll_omegax, k_coll_omegay, k_coll_omegaz,
+					  k_coll_cell_start, k_coll_cell_end, k_coll_index,
+					  eta, dt);
+	if (error_out != 0)
+	  return 1;
+      }
+      
       kernel_move_colloids_VV_part1<<<numBlocks, threadsPerBlock>>>(k_coll_x, k_coll_y,
 								    k_coll_z, k_coll_vx,
 								    k_coll_vy, k_coll_vz,
@@ -95,9 +131,9 @@ int class_system::V_Verlet_step1(dim3 numBlocks,
 								    k_coll_quatx,
 								    k_coll_quaty,
 								    k_coll_quatz,
-								    k_fx_colloid,
-								    k_fy_colloid,
-								    k_fz_colloid,
+								    k_fx_rep_colloid,
+								    k_fy_rep_colloid,
+								    k_fz_rep_colloid,
 								    k_tx_colloid,
 								    k_ty_colloid,
 								    k_tz_colloid,
@@ -107,15 +143,14 @@ int class_system::V_Verlet_step1(dim3 numBlocks,
 								    k_z_center,
 								    k_colloids_list,
 								    k_colloids_start);
-    cuda_err = cudaGetLastError();
-    if (cuda_err != cudaSuccess) {
-      printf("Error in kernel_colloids_VV_part1: %s\n", cudaGetErrorString(cuda_err));
-      return 1;
-    }
-  }
-  
-  // cudaDeviceSynchronize();  // We require the kernel to end to continue    
+      cuda_err = cudaGetLastError();
+      if (cuda_err != cudaSuccess) {
+	printf("Error in kernel_colloids_VV_part1: %s\n", cudaGetErrorString(cuda_err));
+	return 1;
+      }
 
+    }
+  
   return 0;
 
 }

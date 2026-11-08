@@ -84,6 +84,9 @@ int class_system::copy_pointers_to_device(real** k_x,
 					  real** k_fx_colloid,
 					  real** k_fy_colloid,
 					  real** k_fz_colloid,
+					  real** k_fx_rep_colloid,
+					  real** k_fy_rep_colloid,
+					  real** k_fz_rep_colloid,
 					  real** k_tx_colloid,
 					  real** k_ty_colloid,
 					  real** k_tz_colloid,
@@ -234,6 +237,9 @@ int class_system::copy_pointers_to_device(real** k_x,
     error_cuda = cudaMalloc(k_fx_colloid     , N_colloids * sizeof(real));
     error_cuda = cudaMalloc(k_fy_colloid     , N_colloids * sizeof(real));
     error_cuda = cudaMalloc(k_fz_colloid     , N_colloids * sizeof(real));
+    error_cuda = cudaMalloc(k_fx_rep_colloid , N_colloids * sizeof(real));
+    error_cuda = cudaMalloc(k_fy_rep_colloid , N_colloids * sizeof(real));
+    error_cuda = cudaMalloc(k_fz_rep_colloid , N_colloids * sizeof(real));    
     error_cuda = cudaMalloc(k_tx_colloid     , N_colloids * sizeof(real));
     error_cuda = cudaMalloc(k_ty_colloid     , N_colloids * sizeof(real));
     error_cuda = cudaMalloc(k_tz_colloid     , N_colloids * sizeof(real));
@@ -283,12 +289,15 @@ int class_system::copy_pointers_to_device(real** k_x,
     error_cuda = cudaMemset(*k_fx_colloid     , 0, N_colloids * sizeof(real));
     error_cuda = cudaMemset(*k_fy_colloid     , 0, N_colloids * sizeof(real));
     error_cuda = cudaMemset(*k_fz_colloid     , 0, N_colloids * sizeof(real));
+    error_cuda = cudaMemset(*k_fx_rep_colloid , 0, N_colloids * sizeof(real));
+    error_cuda = cudaMemset(*k_fy_rep_colloid , 0, N_colloids * sizeof(real));
+    error_cuda = cudaMemset(*k_fz_rep_colloid , 0, N_colloids * sizeof(real));    
     error_cuda = cudaMemset(*k_tx_colloid     , 0, N_colloids * sizeof(real));
     error_cuda = cudaMemset(*k_ty_colloid     , 0, N_colloids * sizeof(real));
     error_cuda = cudaMemset(*k_tz_colloid     , 0, N_colloids * sizeof(real));
     error_cuda = cudaMemset(*k_coll_cell      , 0, N_colloids * sizeof(int));              
     error_cuda = cudaMemset(*k_coll_index     , 0, N_colloids * sizeof(int));
-    error_cuda = cudaMemset(*k_coll_cell_start, 0, Ntotal_cells_colloids * sizeof(int));              
+    error_cuda = cudaMemset(*k_coll_cell_start, 0, Ntotal_cells_colloids * sizeof(int));
     error_cuda = cudaMemset(*k_coll_cell_end  , 0, Ntotal_cells_colloids * sizeof(int));
   }
 

@@ -20,9 +20,9 @@ email: a.vazquez-quesada@fisfun.uned.es
 __global__ void kernel_repulsion_force_colloids(real* __restrict__ coll_x,
 						real* __restrict__ coll_y,
 						real* __restrict__ coll_z,
-						real* __restrict__ fx_colloid,
-						real* __restrict__ fy_colloid,
-						real* __restrict__ fz_colloid,
+						real* __restrict__ fx_rep_colloid,
+						real* __restrict__ fy_rep_colloid,
+						real* __restrict__ fz_rep_colloid,
 						int*  __restrict__ coll_index,
 						int*  __restrict__ coll_cell_start,
 						int*  __restrict__ coll_cell_end) {
@@ -105,7 +105,7 @@ __global__ void kernel_repulsion_force_colloids(real* __restrict__ coll_x,
 
 	    if (rijsq <= rcutoff_coll_rep_sq) {
 	      real eij[2];
-	      real r_real         = sqrt(rijsq);
+	      real r_real  = sqrt(rijsq);
 	      real r;
 	      if (rijsq < rcuton_coll_rep_sq) //If both particles are too close
 		r = rcuton_coll_rep;
@@ -116,8 +116,8 @@ __global__ void kernel_repulsion_force_colloids(real* __restrict__ coll_x,
 	      eij[1]              = rij[1]/r_real;
 	      real exp_tau_s_neg  = exp(tau_s_neg);
 	      real Frep_mod       = Famp * exp_tau_s_neg / (1.0 - exp_tau_s_neg);
-	      fx_colloid[i]       = fx_colloid[i] + Frep_mod * eij[0];
-	      fy_colloid[i]       = fy_colloid[i] + Frep_mod * eij[1];
+	      fx_rep_colloid[i]   = fx_rep_colloid[i] + Frep_mod * eij[0];
+	      fy_rep_colloid[i]   = fy_rep_colloid[i] + Frep_mod * eij[1];
 	    }
 	  }
       }
@@ -196,9 +196,9 @@ __global__ void kernel_repulsion_force_colloids(real* __restrict__ coll_x,
 		eij[2]              = rij[2]/r_real;	      
 		real exp_tau_s_neg  = exp(tau_s_neg);
 		real Frep_mod       = Famp * exp_tau_s_neg / (1.0 - exp_tau_s_neg);
-		fx_colloid[i]       = fx_colloid[i] + Frep_mod * eij[0];
-		fy_colloid[i]       = fy_colloid[i] + Frep_mod * eij[1];
-		fz_colloid[i]       = fz_colloid[i] + Frep_mod * eij[2];	      
+		fx_rep_colloid[i]   = fx_rep_colloid[i] + Frep_mod * eij[0];
+		fy_rep_colloid[i]   = fy_rep_colloid[i] + Frep_mod * eij[1];
+		fz_rep_colloid[i]   = fz_rep_colloid[i] + Frep_mod * eij[2];	      
 	      }
 	    }
 	}

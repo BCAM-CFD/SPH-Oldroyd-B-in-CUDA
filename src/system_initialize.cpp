@@ -37,6 +37,9 @@ int class_system::initialize(int  Nxyz[3],
 			     real coll_repulsion_cuton,
 			     real F0_repulsion,
 			     real tau_repulsion,
+			     real sweep_tolerance,
+			     int  N_sweep_maximum,
+			     real colloid_lub_cuton,			     
 			     int  new_sim) {
   int error_out;
   error_out = 0;
@@ -79,9 +82,9 @@ int class_system::initialize(int  Nxyz[3],
     y_bottom = 0.0;
     y_top    = L[1];
   }
-
-    if (dim == 2)
-      cw = 63.0 / (478.0 * M_PI * rcut * rcut);
+  
+  if (dim == 2)
+    cw = 63.0 / (478.0 * M_PI * rcut * rcut);
   else
     cw = 27.0 / (120.0 * M_PI * rcut * rcut * rcut);
   c_gradw = -15.0 *cw / rcut;
@@ -174,6 +177,15 @@ int class_system::initialize(int  Nxyz[3],
     this->coll_mass = 4.0/3.0 * M_PI * coll_R * coll_R * coll_R * coll_rho;
     this->coll_I    = 2.0/5.0 * coll_mass * coll_R * coll_R;
   }
+  this->sweep_tol       = sweep_tolerance;
+  this->N_sweep_max     = N_sweep_maximum;
+  this->N_sweep         = 1;
+  this->coll_lub_cutoff = 0.5 * rcut;
+  if (colloid_lub_cuton < 0 || colloid_lub_cuton >= 0.5) {
+    printf("System initialize error: colloid_lub_cuton should not be greater than 0.5\n");
+    return 1;
+  }
+  this->coll_lub_cuton  = colloid_lub_cuton * rcut;
   
   //--- Initial colloids positions and velocities ---
   if (this->N_colloids > 0)
@@ -223,7 +235,14 @@ int class_system::initialize(int  Nxyz[3],
     rcuton_coll_rep_sq    = rcuton_coll_rep * rcuton_coll_rep;    
     rcutoff_coll_rep      = 2.0 * coll_R + coll_rep_cutoff;
     rcutoff_coll_rep_sq   = rcutoff_coll_rep * rcutoff_coll_rep;
-    rcutoff_coll          = rcutoff_coll_rep;
+    rcuton_coll_lub       = 2.0 * coll_R + coll_lub_cuton;
+    rcuton_coll_lub_sq    = rcuton_coll_lub * rcuton_coll_lub;
+    rcutoff_coll_lub      = 2.0 * coll_R + coll_lub_cutoff;
+    rcutoff_coll_lub_sq   = rcutoff_coll_lub * rcutoff_coll_lub;
+    if (rcutoff_coll_rep > rcutoff_coll_lub)
+      rcutoff_coll          = rcutoff_coll_rep;
+    else
+      rcutoff_coll          = rcutoff_coll_lub;      
     rcutoff_coll_sq       = rcutoff_coll * rcutoff_coll;
     Ncells_colloids[0]    = (int)(L[0]/rcutoff_coll);
     cell_colloids_size[0] = L[0] / Ncells_colloids[0];  
@@ -241,7 +260,7 @@ int class_system::initialize(int  Nxyz[3],
     if (Ncells_colloids[0] < 3) {
       printf("System initialize error: neighbour colloids cells are too big\n");
       printf("Ncells_colloids[0] = %d\n", Ncells_colloids[0]);
-      printf("Maybe tau_repulsion is too small? rcutoff_coll_rep = 5.0*R/tau_rep\n");      
+      printf("Maybe tau_repulsion or rcutoff_coll_lub are too big? rcutoff_coll_rep = 5.0*R/tau_rep\n");      
       error_out = 1;
       return 1;
     }
@@ -258,7 +277,7 @@ int class_system::initialize(int  Nxyz[3],
 	printf("Ncells_colloids[2] = %d\n", Ncells_colloids[2]);
 	printf("Maybe tau_repulsion is too small? rcutoff_coll_rep = 5.0*R/tau_rep\n");	
 	error_out = 1;
-      return 1;
+	return 1;
       }
   }
 

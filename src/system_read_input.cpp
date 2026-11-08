@@ -38,6 +38,9 @@ int class_system::read_input(int   N[3],
 			     real& coll_repulsion_cuton,
 			     real& F0_repulsion,
 			     real& tau_repulsion,
+			     real& sweep_tolerance,
+			     int&  N_sweep_maximum,
+			     real& colloid_lub_cuton,
 			     int&  new_sim) {
 
   // Array to store initial positions of the colloids	   
@@ -81,6 +84,9 @@ int class_system::read_input(int   N[3],
   int coll_repulsion_cuton_read  = 1;
   int F0_repulsion_read    = 1;
   int tau_repulsion_read   = 1;
+  int sweep_tolerance_read = 1;
+  int N_sweep_maximum_read = 1;
+  int colloid_lub_cuton_read  = 1;        
   int new_sim_read         = 1;    
     
   while (fgets(line, sizeof(line), file)) {
@@ -215,10 +221,19 @@ int class_system::read_input(int   N[3],
     } else if (strcmp(var, "tau_repulsion") == 0 && count >= 2) {
       tau_repulsion        = val1;
       tau_repulsion_read   = 0;
+    } else if (strcmp(var, "sweep_tolerance") == 0 && count >= 2) {
+      sweep_tolerance        = val1;
+      sweep_tolerance_read   = 0;
+    } else if (strcmp(var, "N_sweep_maximum") == 0 && count >= 2) {
+      N_sweep_maximum        = val1;
+      N_sweep_maximum_read   = 0;
+    } else if (strcmp(var, "colloid_lub_cuton") == 0 && count >= 2) {
+      colloid_lub_cuton     = val1;
+      colloid_lub_cuton_read   = 0;                     
     } else if (strcmp(var, "new_sim") == 0 && count >= 2) {
       new_sim              = val1;
       new_sim_read         = 0;            
-     }
+    }
     else if (strcmp(var, "coll_x") == 0){
       if (count >= 3 && N_coll > 0) {
 	if (coll_x_count >= N_coll) {
@@ -366,6 +381,18 @@ int class_system::read_input(int   N[3],
     printf("system_read_input error: tau_repulsion was not read\n");
     return 1;
   }
+  if (sweep_tolerance_read == 1)  {
+    printf("system_read_input error: sweep_tolerance was not read\n");
+    return 1;    
+  }
+  if (N_sweep_maximum_read == 1)  {
+    printf("system_read_input error: N_sweep_maximum was not read\n");
+    return 1;    
+  }
+  if (colloid_lub_cuton_read == 1)  {
+    printf("system_read_input error: colloid_lub_cuton was not read\n");
+    return 1;    
+  }      
   if (new_sim_read == 1)  {
     printf("system_read_input error: new_sim was not read\n");
     return 1;
@@ -437,13 +464,15 @@ int class_system::read_input(int   N[3],
 	  real rij = sqrt(xij*xij + yij*yij);
 	  if (rij < 2 * coll_radius) {
 	    printf("System read input error: Overlapping colloids\n");
+	    printf("Particles %d and %d\n", i, j);
+	    printf("Distance rij = %f\n", rij);	    
 	    return 1;
 	  }
 	}
 	else {  // dim == 3
 	  real xij = coll_x_data[i][0] - coll_x_data[j][0];
 	  real yij = coll_x_data[i][1] - coll_x_data[j][1];
-	  real zij = coll_x_data[i][1] - coll_x_data[j][1];	
+	  real zij = coll_x_data[i][2] - coll_x_data[j][2];	
 	  //--- Periodic boundary conditions ---
 	  if (xij > 0.5 * L[0])
 	    xij -= L[0];
@@ -463,6 +492,8 @@ int class_system::read_input(int   N[3],
 	  real rij = sqrt(xij*xij + yij*yij + zij*zij);
 	  if (rij < 2 * coll_radius) {
 	    printf("System read input error: Overlapping colloids\n");
+	    printf("Particles %d and %d\n", i, j);	    
+	    printf("Distance rij = %f\n", rij);
 	    return 1;
 	  }
 	}      
@@ -470,4 +501,5 @@ int class_system::read_input(int   N[3],
   fclose(file);
 
   return 0;
-}
+  }
+

@@ -11,6 +11,11 @@ email: a.vazquez-quesada@fisfun.uned.es
 #include <stdio.h>
 
 //Part 1 of the function to move colloids with a velocity Verlet method with lambda = 0.5.
+// The final velocity is the velocity at t + dt/2
+// V_n+1/2 = V_tilde + 1/2 * F_repulsion * dt / m
+// where V_tilde is the velocity with the lubrication correction.
+// The final position is the position at t + dt
+// R_n+1 = R_n + V_n+1/2 * dt
 __global__ void kernel_move_colloids_VV_part1(real* __restrict__ coll_x,
 					      real* __restrict__ coll_y,
 					      real* __restrict__ coll_z,
@@ -25,9 +30,9 @@ __global__ void kernel_move_colloids_VV_part1(real* __restrict__ coll_x,
 					      real* __restrict__ coll_quatx,
 					      real* __restrict__ coll_quaty,
 					      real* __restrict__ coll_quatz,
-					      real* __restrict__ fx_colloid,
-					      real* __restrict__ fy_colloid,
-					      real* __restrict__ fz_colloid,
+					      real* __restrict__ fx_rep_colloid,
+					      real* __restrict__ fy_rep_colloid,
+					      real* __restrict__ fz_rep_colloid,
 					      real* __restrict__ tx_colloid,
 					      real* __restrict__ ty_colloid,
 					      real* __restrict__ tz_colloid,
@@ -46,7 +51,6 @@ __global__ void kernel_move_colloids_VV_part1(real* __restrict__ coll_x,
 
   //--- Some initialization ---
   real half_dt_over_mass = 0.5 * dt / coll_mass;
-  real half_dt_over_I    = 0.5 * dt / coll_I;  
   real coll_xi = coll_x[i];
   real coll_yi = coll_y[i];
   real coll_zi;
@@ -54,23 +58,22 @@ __global__ void kernel_move_colloids_VV_part1(real* __restrict__ coll_x,
     coll_zi = coll_z[i];
 
   //--- Velocity at t + dt/2  ---
-  coll_vx[i] += half_dt_over_mass * fx_colloid[i];
-  coll_vy[i] += half_dt_over_mass * fy_colloid[i];
+  coll_vx[i] += half_dt_over_mass * fx_rep_colloid[i];
+  coll_vy[i] += half_dt_over_mass * fy_rep_colloid[i];
   if (dim == 3)
-    coll_vz[i] += half_dt_over_mass * fz_colloid[i];
+    coll_vz[i] += half_dt_over_mass * fz_rep_colloid[i];
 
-  //--- Angular Velocity at t + dt/2  ---
+  //--- Angular Velocity at t + dt/2 was already calculated at kernel_vel_colloids_SPH.
+  //    If a rotational interaction between colloids is programmed, the angular
+  //    velocity change at t + dt/2 due to such an interaction should be calculated here --
   real omega; 
-  coll_omegaz[i] += half_dt_over_I * tz_colloid[i];
   if (dim == 2)
     omega = coll_omegaz[i];  
   else {  // dim == 3 
-    coll_omegax[i] += half_dt_over_I * tx_colloid[i];
-    coll_omegay[i] += half_dt_over_I * ty_colloid[i];
     omega = sqrt(coll_omegax[i] * coll_omegax[i] +
 		 coll_omegay[i] * coll_omegay[i] +
 		 coll_omegaz[i] * coll_omegaz[i]);    
-  }
+  }  
 
   //--- Position at t + dt ---
   coll_xi = coll_xi + coll_vx[i] * dt;

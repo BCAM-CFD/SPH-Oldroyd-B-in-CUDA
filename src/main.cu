@@ -13,14 +13,16 @@ email: a.vazquez-quesada@fisfun.uned.es
 
 //---- Declaration of a function of main ------------
 __host__ void print_main_vars(real delta_t,
-			      int Nsteps,
-			      int freq_micro,
-			      int freq_macro,
-			      int freq_walls,
-			      int freq_colloids,
-			      int new_sim,
-			      int coll_move,
-			      int N_coll);
+			      int  Nsteps,
+			      real eta,
+			      real zeta,
+			      int  freq_micro,
+			      int  freq_macro,
+			      int  freq_walls,
+			      int  freq_colloids,
+			      int  new_sim,
+			      int  coll_move,
+			      int  N_coll);
 
 //***************************
 //   main program
@@ -32,12 +34,6 @@ int main() {
   //-----------------------------------
   int         error = 0;
   cudaError_t cuda_err;
-  clock_t     start_neighbours;
-  clock_t     end_neighbours;
-  clock_t     start_forces;
-  clock_t     end_forces;
-  double      time_neighbours = 0.0;
-  double      time_forces     = 0.0;    
 
   //--------------------------------------------------------------------  
   //--- Declaration of the input variables (and their default values)---
@@ -70,10 +66,13 @@ int main() {
   real coll_density    = 1.0;
   real coll_x_data[MAX_COLLOIDS][MAX_VALUES_PER_COLLOID];
   int  coll_move       = 1;
-  real coll_repulsion_cuton  = 0.001;  
+  real coll_repulsion_cuton  = 0.001;
   int  new_sim         = 1;
   real F0_repulsion    = 1.0;
   real tau_repulsion   = 0.01;
+  real colloid_lub_cuton  = 0.001;  
+  real sweep_tolerance = 1.0E-3;
+  int  N_sweep_maximum = 10;
 
   //--------------------------------------------------------------------  
   //---------- initialization ------------------------------------------
@@ -91,14 +90,15 @@ int main() {
 			 freq_micro, freq_macro, freq_walls, freq_colloids,
 			 wall_host, Vwall_top, Vwall_bottom,
 			 N_coll, coll_radius, coll_density, coll_x_data, coll_move,
-			 coll_repulsion_cuton, F0_repulsion, tau_repulsion, new_sim);
+			 coll_repulsion_cuton, F0_repulsion, tau_repulsion,
+			 sweep_tolerance, N_sweep_maximum, colloid_lub_cuton, new_sim);
   if (error != 0)
     return 1; // End of program
 
   //-------------------------------------------------------------------------
   //----- Main variables are printed (print_main_vars is defined below) -----
   //-------------------------------------------------------------------------  
-  print_main_vars(delta_t, Nsteps, freq_micro, freq_macro, freq_walls,
+  print_main_vars(delta_t, Nsteps, eta, zeta, freq_micro, freq_macro, freq_walls,
 		  freq_colloids, new_sim, coll_move, N_coll);
 
   //----------------------------------------------  
@@ -119,7 +119,8 @@ int main() {
 			 wall_host, Vwall_top, Vwall_bottom,
 			 N_coll, coll_radius, coll_density,
 			 coll_x_data, coll_repulsion_cuton, F0_repulsion,
-			 tau_repulsion, new_sim);
+			 tau_repulsion, sweep_tolerance, N_sweep_maximum,
+			 colloid_lub_cuton, new_sim);
   if (error != 0)
     return 1;  
 
@@ -169,6 +170,7 @@ int main() {
   real *k_coll_quat0, *k_coll_quatx, *k_coll_quaty, *k_coll_quatz;    
   real *k_x_center, *k_y_center, *k_z_center;
   real *k_fx_colloid, *k_fy_colloid, *k_fz_colloid;
+  real *k_fx_rep_colloid, *k_fy_rep_colloid, *k_fz_rep_colloid;  
   real *k_tx_colloid, *k_ty_colloid, *k_tz_colloid;
   int  *k_coll_cell;
   int  *k_coll_index;
@@ -259,7 +261,9 @@ int main() {
 				      &k_coll_theta, &k_coll_quat0, &k_coll_quatx,
 				      &k_coll_quaty, &k_coll_quatz,
 				      &k_x_center, &k_y_center, &k_z_center,
-				      &k_fx_colloid, &k_fy_colloid, &k_fz_colloid,	
+				      &k_fx_colloid, &k_fy_colloid, &k_fz_colloid,
+				      &k_fx_rep_colloid, &k_fy_rep_colloid,
+				      &k_fz_rep_colloid,
 				      &k_tx_colloid, &k_ty_colloid, &k_tz_colloid,
 				      &k_coll_cell, &k_coll_index,
 				      &k_coll_cell_start, &k_coll_cell_end,
@@ -322,6 +326,7 @@ int main() {
 			       k_coll_vx, k_coll_vy, k_coll_vz,
 			       k_coll_omegax, k_coll_omegay, k_coll_omegaz,
 			       k_fx_colloid, k_fy_colloid, k_fz_colloid,
+			       k_fx_rep_colloid, k_fy_rep_colloid, k_fz_rep_colloid,
 			       k_tx_colloid, k_ty_colloid, k_tz_colloid,
 			       k_colloids_list, k_colloids_start, k_coll_index,
 			       k_coll_cell_start, k_coll_cell_end, k_posf);
@@ -348,7 +353,7 @@ int main() {
   //-------------------------------------------------------------------------------------- 
   //----------------------------------- Main loop ----------------------------------------
   //--------------------------------------------------------------------------------------
-  //
+  // 
   clock_t start = clock();
   for (int step = 1; step <= Nsteps; ++step) {
     
@@ -366,28 +371,26 @@ int main() {
 			       k_coll_theta, k_coll_quat0, k_coll_quatx,
 			       k_coll_quaty, k_coll_quatz,
 			       k_fx_colloid, k_fy_colloid, k_fz_colloid,
+			       k_fx_rep_colloid, k_fy_rep_colloid, k_fz_rep_colloid,
 			       k_tx_colloid, k_ty_colloid, k_tz_colloid,
 			       k_x_center, k_y_center, k_z_center,
-			       k_colloids_list, k_colloids_start, coll_move);
+			       k_colloids_list, k_colloids_start,
+			       k_coll_cell_start, k_coll_cell_end,
+			       k_coll_index, eta, delta_t, coll_move);
     if (error != 0)
       return 1; // End of program
 
     //---- Neighbour search ----
-    start_neighbours = clock();    
     error = sys.neighbours_search(numBlocks, threadsPerBlock, k_x, k_y, k_z,
 				  k_particle_cell, k_particle_index,
 				  k_cell_start, k_cell_end,				  
 				  k_coll_x, k_coll_y, k_coll_z,
 				  k_coll_cell, k_coll_index,
 				  k_coll_cell_start, k_coll_cell_end);
-    end_neighbours = clock();
-    time_neighbours = time_neighbours +
-      (double)(end_neighbours - start_neighbours) / CLOCKS_PER_SEC;    
     if (error != 0)
       return 1; // End of program
 
     //----- Forces are calculated ----
-    start_forces = clock();            
     error = sys.calculate_forces(numBlocks, threadsPerBlock,
 				 k_x, k_y, k_z, k_vx, k_vy, k_vz,
 				 k_cxx, k_cxy, k_cyy, k_cxz, k_cyz, k_czz,
@@ -408,11 +411,10 @@ int main() {
 				 k_coll_vx, k_coll_vy, k_coll_vz,
 				 k_coll_omegax, k_coll_omegay, k_coll_omegaz,
 				 k_fx_colloid, k_fy_colloid, k_fz_colloid,
+				 k_fx_rep_colloid, k_fy_rep_colloid, k_fz_rep_colloid,
 				 k_tx_colloid, k_ty_colloid, k_tz_colloid,
 				 k_colloids_list, k_colloids_start, k_coll_index,
 				 k_coll_cell_start, k_coll_cell_end, k_posf);
-    end_forces = clock();
-    time_forces = time_forces + (double)(end_forces - start_forces) / CLOCKS_PER_SEC;  
     if (error != 0)
       return 1; // End of program                
     
@@ -427,6 +429,7 @@ int main() {
 			       k_coll_vx, k_coll_vy, k_coll_vz,
 			       k_coll_omegax, k_coll_omegay, k_coll_omegaz,
 			       k_fx_colloid, k_fy_colloid, k_fz_colloid,
+			       k_fx_rep_colloid, k_fy_rep_colloid, k_fz_rep_colloid,
 			       k_tx_colloid, k_ty_colloid, k_tz_colloid,
 			       coll_move);
     if (error != 0)
@@ -461,8 +464,6 @@ int main() {
   clock_t end = clock();
   double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
   printf("Total time: %f seconds\n", time_spent);
-  printf("Neighbours time: %f seconds\n", time_neighbours);
-  printf("Forces time: %f seconds\n", time_forces);  
 
   //---------------------------------
   //---- Resources are released -----
@@ -562,26 +563,30 @@ int main() {
 //-----------------------------------------------
 //----  Function  to print variables of main ----
 __host__ void print_main_vars(real delta_t,
-		     int  Nsteps,
-		     int  freq_micro,
-		     int  freq_macro,
-		     int  freq_walls,
-		     int  freq_colloids,
-		     int  new_sim,
-		     int  coll_move,
-		     int  N_coll) {
+			      int  Nsteps,
+			      real eta,
+			      real zeta,
+			      int  freq_micro,
+			      int  freq_macro,
+			      int  freq_walls,
+			      int  freq_colloids,
+			      int  new_sim,
+			      int  coll_move,
+			      int  N_coll) {
 
   std::cout << "--- Main variables ----\n";
   std::cout << "Time step                 = " << delta_t  << "\n";
-  std::cout << "Number of steps           = " << Nsteps  << "\n";
+  std::cout << "Number of steps           = " << Nsteps   << "\n";
+  std::cout << "Viscosity                 = " << eta      << "\n";
+  std::cout << "Volume viscosity          = " << zeta     << "\n";  
   std::cout << "Output frequency micro    = " << freq_micro  << "\n";
   std::cout << "Output frequency macro    = " << freq_macro  << "\n";
   std::cout << "Output frequency walls    = " << freq_walls  << "\n";
   std::cout << "Output frequency colloids = " << freq_colloids  << "\n";
-  if (new_sim == 1)
-    std::cout << "New simulation?           = Yes\n";
+  if (new_sim == 0)
+    std::cout << "New simulation?           = No\n";
   else
-    std::cout << "New simulation?           = No\n";    
+    std::cout << "New simulation?           = Yes\n";    
   if (N_coll > 0)
     if (coll_move == 1) 
       std::cout << "Are colloids moving?      = Yes\n";

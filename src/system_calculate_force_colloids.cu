@@ -19,6 +19,9 @@ int class_system::calculate_force_colloids(dim3  numBlocks,
 					   real* k_fx_colloid,
 					   real* k_fy_colloid,
 					   real* k_fz_colloid,
+					   real* k_fx_rep_colloid,
+					   real* k_fy_rep_colloid,
+					   real* k_fz_rep_colloid,
 					   real* k_tx_colloid,
 					   real* k_ty_colloid,
 					   real* k_tz_colloid,
@@ -55,11 +58,21 @@ int class_system::calculate_force_colloids(dim3  numBlocks,
   // cudaDeviceSynchronize();  // We require the kernel to end to continue
 
   //---- Repulsion forces are calculated ----
+  if ( (wall && N_colloids > 0) || N_colloids > 1 )
+    kernel_repulsion_colloids_zero<<<numBlocks, threadsPerBlock>>>(k_fx_rep_colloid,
+								   k_fy_rep_colloid,
+								   k_fz_rep_colloid);  
+
+  
+  if (wall)
+  kernel_repulsion_colloids_walls<<<numBlocks, threadsPerBlock>>>(k_coll_y,
+								  k_fy_rep_colloid);  
   if (N_colloids >= 2)  {
     kernel_repulsion_force_colloids<<<numBlocks, threadsPerBlock>>>(k_coll_x, k_coll_y,
-								    k_coll_z, k_fx_colloid,
-								    k_fy_colloid,
-								    k_fz_colloid,
+								    k_coll_z,
+								    k_fx_rep_colloid,
+								    k_fy_rep_colloid,
+								    k_fz_rep_colloid,
 								    k_coll_index,
 								    k_coll_cell_start,
 								    k_coll_cell_end);
@@ -68,7 +81,6 @@ int class_system::calculate_force_colloids(dim3  numBlocks,
       printf("Error in kernel_repulsion_force_colloids: %s\n", cudaGetErrorString(cuda_err));
       return 1;
     }  	
-    // cudaDeviceSynchronize();  // We require the kernel to end to continue
   }
   
   return 0;

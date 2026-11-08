@@ -55,7 +55,7 @@ __global__ void kernel_print_constants() {
       printf("Colloids moment of inertia        = " REAL_FMT "\n", coll_I);      
       printf("Number of particles of colloids   = %d\n",Nlist_colloids);
     }
-    if (N_colloids >= 2) {
+    if (N_colloids >= 1) {
       printf("Colloids repulsion cutoff (surface-surface) = " REAL_FMT "\n", coll_rep_cutoff);
       printf("Colloids repulsion cuton (surface-surface)  = " REAL_FMT "\n", coll_rep_cuton);
       printf("Colloids repulsion cutoff (center-center)   = " REAL_FMT "\n", rcutoff_coll_rep);

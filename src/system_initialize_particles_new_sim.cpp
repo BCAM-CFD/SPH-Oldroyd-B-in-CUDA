@@ -193,6 +193,21 @@ int class_system::initialize_particles_new_sim(int  Nxyz[3],
 	  x[this->N - 1] = this->coll_x[i];
 	  y[this->N - 1] = this->coll_y[i];
 	  z[this->N - 1] = this->coll_z[i] + r;
+	  // Periodic boundary conditions
+	  if (x[this->N - 1] < 0)
+	    x[this->N - 1] = x[this->N - 1] + L[0];
+	  if (wall == 0) //--- If no wall ---
+	    if (y[this->N - 1] < 0)
+	      y[this->N - 1] = y[this->N - 1] + L[1];
+	  if (z[this->N - 1] < 0)
+	    z[this->N - 1] = z[this->N - 1] + L[2];
+	  if (x[this->N - 1] > L[0])
+	    x[this->N - 1] = x[this->N - 1] - L[0];
+	  if (wall == 0) //--- If no wall ---    
+	    if (y[this->N - 1] > L[1])
+	      y[this->N - 1] = y[this->N - 1] - L[1];
+	  if (z[this->N - 1] > L[2])
+	    z[this->N - 1] = z[this->N - 1] - L[2];	      	  
 	  type[this->N - 1] = 3 + i;
 
 	  //-- Theta angle --
@@ -208,6 +223,10 @@ int class_system::initialize_particles_new_sim(int  Nxyz[3],
 	    real phi      = 0.0;
 	    for (int l = 0; l < Npart_phi; ++l) {
 	      this->N = this->N + 1;
+	      if (this->N > this->Nmax) {
+		printf("system initialize particles new sim error: N > Nmax. Please, increase the value of Nmax in system_constructor.\n");
+		return 1;
+	      }
 	      x[this->N - 1]    = this->coll_x[i] + r * sin(theta) * cos(phi);
 	      // printf("sss %d %d %d %d\n", i, j, k, l);
 	      // printf("ttt %d \n", this->N - 1);
@@ -237,9 +256,28 @@ int class_system::initialize_particles_new_sim(int  Nxyz[3],
 	  }
 	  //-- Finally, the south pole --
 	  this->N = this->N + 1;
+	  if (this->N > this->Nmax) {
+	    printf("system initialize particles new sim error: N > Nmax. Please, increase the value of Nmax in system_constructor.\n");
+	    return 1;
+	  }
 	  x[this->N - 1] = this->coll_x[i];
 	  y[this->N - 1] = this->coll_y[i];
 	  z[this->N - 1] = this->coll_z[i] - r;
+	  // Periodic boundary conditions
+	  if (x[this->N - 1] < 0)
+	    x[this->N - 1] = x[this->N - 1] + L[0];
+	  if (wall == 0) //--- If no wall ---
+	    if (y[this->N - 1] < 0)
+	      y[this->N - 1] = y[this->N - 1] + L[1];
+	  if (z[this->N - 1] < 0)
+	    z[this->N - 1] = z[this->N - 1] + L[2];
+	  if (x[this->N - 1] > L[0])
+	    x[this->N - 1] = x[this->N - 1] - L[0];
+	  if (wall == 0) //--- If no wall ---    
+	    if (y[this->N - 1] > L[1])
+	      y[this->N - 1] = y[this->N - 1] - L[1];
+	  if (z[this->N - 1] > L[2])
+	    z[this->N - 1] = z[this->N - 1] - L[2];	      	  
 	  type[this->N - 1] = 3 + i;
 	}
 	r = r + dx[0];

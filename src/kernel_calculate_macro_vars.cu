@@ -23,7 +23,7 @@ __global__ void kernel_calculate_macro_vars(real* __restrict__ mass,
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   if (i >= N) return;
 
-  real part_sum;
+  real part_sum = 0.0;
 
   //--- Loop over fluid particles ---
   if (type[i] == 0) {

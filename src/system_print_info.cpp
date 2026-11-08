@@ -70,7 +70,7 @@ void class_system::print_info() {
 		  << coll_x[i] << " " << coll_y[i] << "\n";
     std::cout << "Number of particles in colloids list, Nlist_colloids = " << Nlist_colloids << "\n";
   }
-  if (N_colloids >= 2) {
+  if (N_colloids >= 1) {
     std::cout << "colloids repulsion cutoff (surface-surface) = " << coll_rep_cutoff << "\n";
     std::cout << "colloids repulsion cuton (surface-surface)  = " << coll_rep_cuton << "\n";
     std::cout << "colloids repulsion cutoff (center-center)   = " << rcutoff_coll_rep << "\n";
@@ -83,7 +83,11 @@ void class_system::print_info() {
     std::cout << "Number of colloids cells                    = " << Ncells_colloids[0] << " "
 	      << Ncells_colloids[1] << " " << Ncells_colloids[2] << "\n";
     std::cout << "Total number of colloids cells              = "
-	      << Ntotal_cells_colloids << "\n";   
+	      << Ntotal_cells_colloids << "\n";
+    std::cout << "Sweep tolerance " << sweep_tol << "\n";
+    std::cout << "Maximum number of sweeps " << N_sweep_max << "\n";
+    std::cout << "Lubric. cutoff in simulation units "<< coll_lub_cutoff << "\n";
+    std::cout << "Lubric. cuton in simulation units  "<< coll_lub_cuton << "\n";
   }
 
   if (wall == 1 || N_colloids > 0)
