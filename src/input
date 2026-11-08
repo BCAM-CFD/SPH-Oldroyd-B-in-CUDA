@@ -1,43 +1,46 @@
 # Inputs for the SDPD program
-  N        80  80
-  L        1.0  1.0
-  dim      2
-#  dt       0.0001  
-  dt       0.00005
-  Nsteps   300000
+#  N        160   320   80
+  N        80   160   40  
+  L        16.0  32.0  8.0
+  dim      3
+  dt       0.00125
+  Nsteps   40000
   overlap  4.0
   rho      1.0
-  c        1.0
+  c        42.3
   P0       0.9
-  eta      0.04
-#  zeta     1.66667
-  zeta     0.0
-  #**** oldroyd ***
-  np   0.0
+  eta      5.75
+  zeta     9.5833333
+#**** oldroyd ***
+  np   0.14329125
   kT   1.0
-  tau  0.02  
+  tau  18.9125295508274
   
-  ext_force_type 2
-  ext_force    0.0286   0.0
+  ext_force_type 0
+  ext_force    0.0   0.0
 
-  freq_micro    10000
+  freq_micro    500
   freq_macro    100
-  freq_walls    10000
-  freq_colloids 10000
+  freq_walls    100
+  freq_colloids 100
 
-  wall 0
-  Vwall_bottom 0.0  
-  Vwall_top 0.0
+  wall 1
+  Vwall_bottom -0.846
+  Vwall_top 0.846
 
-  N_colloids 0
-  coll_R  0.15
+  N_colloids 2
+  coll_R  1.0
   coll_rho 1.0
-  coll_move 0
-  coll_x 0.5 0.5
-  coll_x 0.84 0.5  
-  coll_repulsion_cuton  0.0
-  F0_repulsion 1.0
-  tau_repulsion 0.1
+  coll_move 1
+  coll_x 4.2588314840 14.0105170200 5.6174760840
+  coll_x 11.0591437500 8.1602782680 4.6556304520
+  coll_repulsion_cuton  1.0e-6
+  F0_repulsion 2.115
+  tau_repulsion 1000.0
+  colloid_lub_cuton 1.0e-5
+  sweep_tolerance 1.0e-2
+  #N_sweep_maximum was established as 1024 in the CPU code.
+  N_sweep_maximum 1024
   
-  new_sim 0
+  new_sim 1
   
