@@ -119,6 +119,12 @@ To run the program, execute:
 
 **tau_repulsion**        -> Tau parameter of the repulsion force (related to the cut off radius of the repulsion force).
 
+**colloid_lub_cuton**    -> Cut on of the lubrication force.
+
+**sweep_tolerance**      -> Tolerance of the semi-implicit lubrication model.
+
+**Nsweep_maximum**       -> Maximum number of sweeps of the semi-implicit lubrication model.
+
 **new_sim** -> The simulation is new, or it is restarting from a previous simulation
 
 		   0: existing simulation 
